@@ -53,51 +53,58 @@ If you start work on the application or decide to upgrade to the latest version,
 
 - Install the nanoFirmwareFlasher and .NET **nanoFramework** Virtual Device in a directory that is specific for your project, e.g.:
 	```
-	dotnet tool install nanoff --tool-path c:\MyProject\nanoFramework
-	dotnet tool install nanoclr --tool-path c:\MyProject\nanoFramework
+	dotnet tool install nanoff --tool-path c:\MySolution\nanoFramework
+	dotnet tool install nanoclr --tool-path c:\MySolution\nanoFramework
 	```
 	Backup the tools and/or the NuGet packages and use the backup for installation of the tools on other machines.
 
 - Create a list of the versions of all NuGet packages of the .NET **nanoFramework** class libraries and community additions. The easiest way is to download NuGet.exe and run:
 	```
-	nuget list nanoFramework > c:\MyProject\nanoFramework\NuGetPackageList.txt
+	nuget list nanoFramework > c:\MySolution\nanoFramework\NuGetPackageList.txt
 	```
 	The resulting file contains a list of all packages with *nanoFramework* in the description, and the current version of the package. You can include a short description by running:
 	```
-	nuget list nanoFramework -verbosity detailed > c:\MyProject\nanoFramework\NuGetPackageList.txt
+	nuget list nanoFramework -verbosity detailed > c:\MySolution\nanoFramework\NuGetPackageList.txt
 	```
 
 - If you already have code that uses the .NET **nanoFramework**, go to the NuGet package management for each solution in Visual Studio and upgrade to the latest version of the packages that implement or are based on the .NET **nanoFramework**.
 
-- Retrieve the firmware for all devices that you are using or plan to use. For each device or platform run nanoff with the --firmwarearchive and --preview options, e.g.:
+- Retrieve the firmware for all devices that you are using or plan to use. For each device or platform run nanoff with the --fwarchivepath and --updatefwarchive options, e.g.:
 	```
-	c:\MyProject\nanoFramework\nanoff --target ESP32_S3_ALL --firmwarearchive c:\MyProject\nanoFramework\Firmware --preview
+	c:\MySolution\nanoFramework\nanoff --target ESP32_S3_ALL --updatefwarchive --fwarchivepath c:\MySolution\nanoFramework\Firmware 
 	```
 	or, if the device is connected to the PC:
 	```
-	c:\MyProject\nanoFramework\nanoff --platform esp32 --serialport COM3 --firmwarearchive c:\MyProject\nanoFramework\Firmware --update
-	```
-	Archive the firmware that is placed in directory passed via the --firmwarearchive option.
+	c:\MySolution\nanoFramework\nanoff --nanodevice --serialport COM3 --updatefwarchive --fwarchivepath c:\MySolution\nanoFramework\Firmware
+	```	The device itself is not updated by this command.
+
+	Make sure the archive directory passed via the --fwarchivepath option is empty before retrieving the new firmware versions. Archive its contents after all firmware is retrieved.
 
 Now create projects for your application and optionally class libraries and unit tests and code the application. Make sure that:
 
-- Your projects should only use versions of the NuGet packages that are in the previously created list of packages (e.g., c:\MyProject\nanoFramework\NuGetPackageList.txt).
+- Your projects should only use versions of the NuGet packages that are in the previously created list of packages (e.g., c:\MySolution\nanoFramework\NuGetPackageList.txt).
 - For every (new) .NET **nanoFramework** unit test project update the `nano.runsettings` file in the root of the project directory and set:
 	```
-	<PathToLocalCLRInstance>c:\MyProject\nanoFramework\nanoclr.exe</PathToLocalCLRInstance>
+	<PathToLocalCLRInstance>c:\MySolution\nanoFramework\nanoclr.exe</PathToLocalCLRInstance>
 	```
-	Preferably use a relative path, e.g.:
+	Preferably use a path relative to the directory that contains the `nano.settings` file, e.g.:
 	```
 	<PathToLocalCLRInstance>..\nanoFramework\nanoclr.exe</PathToLocalCLRInstance>
 	```
 	This can be omitted if the unit tests from the project will only ever be run on a real device.
 
-To deploy firmware to a device, use the same options as for strategy 1 but add the --firmwarearchive and --firmwaresource options, e.g.: 
+To deploy firmware to a device, use the same options as for strategy 1 but add the --fwarchivepath and --fromfwarchive options, e.g.: 
 ```
-c:\MyProject\nanoFramework\nanoff --platform esp32 --serialport COM3 --update --firmwarearchive c:\MyProject\nanoFramework\Firmware --firmwaresource archive
+c:\MySolution\nanoFramework\nanoff --suppressnanoffversioncheck --platform esp32 --serialport COM3 --update --fromfwarchive --fwarchivepath c:\MySolution\nanoFramework\Firmware
 ```
+An application can be deployed to a device using the Visual Studio extension, provided the firmware on the device has been updated using te previous command. An application can also be deployed using the project-specific version of the nanoFirmwareFlasher as long as the --fwarchivepath and --fromfwarchive options are added.
 
-An application can be deployed to a device using the Visual Studio extension, provided the firmware on the device has been updated using hte previous command. An application can also be deployed using the project-specific version of the nanoFirmwareFlasher as long as the --firmwarearchive and --firmwaresource options are added.
+You can use the nanoFirmwareFlasher in the same way with the same arguments as normal, provided you use the local nanoff application and add the --fromfwarchive and --fwarchivepath options. E.g.:
+```
+c:\MySolution\nanoFramework\nanoff --suppressnanoffversioncheck --listtargets --fromfwarchive --fwarchivepath c:\MySolution\nanoFramework\Firmware
+```
+lists the non-preview firmware versions in the archive directory.
+
 
 ## What about the Visual Studio extension?
 The Visual Studio extension does not depend on the .NET **nanoFramework** class libraries or its implementation (firmware or .NET **nanoFramework** Virtual Device). Regardless of the chosen strategy you can decide to update the extension as soon as a new version is available, not at all or something inbetween.
