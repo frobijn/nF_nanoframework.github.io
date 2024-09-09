@@ -1,9 +1,9 @@
-# Migrate from nanoFramework.TestFramework v2
+﻿# Migrate from nanoFramework.TestFramework v2
 
 ## Keep using the v2 test platform
 It is possible to have a solution with both unit tests project that use v2 of the test platform and projects that use v3. The v2 projects will be handled by the v2 test adapter, the v3 projects by the v3 test platform. The v2 test projects will not benefit from any of the v3 improvements.
 
-## Migrate to v3, do not update any code
+## Migrate to v3, minimal updates to the code
 The next step is to migrate the v2 test projects to v3:
 
 - Remove the NuGet package `nanoFramework.TestFramework` from the project and add `nanoFramework.TestFramework.UnitTestsProject`.
@@ -17,6 +17,10 @@ The first time the unit test project is (re)built, the v3 test platform updates 
 - The project file is modified to use the v3 `nano.vstest.runsettings` file.
 
 - The `nano.runsettings` file is migrated to a v3 `nano.runsettings`/`nano.runsettings.user` pair and a `nano.vstest.runsettings` file. If there are no settings to store in one of the files, that file is not created/removed. Be aware the the v2 `RealHardwarePort` setting is migrated to the `nano.runsettings.user` file that is no longer stored in the git repository.
+
+Visual Studio will ask whether to reload the project; answer "Reload all". It may be necessary to restart Visual Studio.
+
+No code changes are required, unless the test project has test classes that are inadvertently non-public. The v2 test platform doesn't care about the visibility of test classes and will discover the test, but the v3 test platform (and all other test frameworks) only takes public test classes into account and ignores internal classes.
 
 The unit tests will be run using the v3 test platform. To make maximum use of running tests in parallel, consider moving the `nano.vstest.runsettings` to the solution directory or to the top of the repository, and add the corresponding `GlobalSettings` element to `nano.runsettings` as per [specification](controlling-the-test-execution#configuration-file-hierarchy).
 

@@ -1,4 +1,4 @@
-{
+﻿{
   "metadata": [
     {
       "src": [
@@ -15,8 +15,9 @@
             "**/**.Test*",
             "nanoFramework.IoT.Device/**",
             "**/TestAdapter/**",
-            "**/poc/TestOfTestFramework/**",
-            "**/poc/TestOfTestFrameworkByReference/**"
+            "**/TestFramework.TestAdapter/**",
+            "**/TestFramework.TestProjectBuildTool/**",
+            "**/poc/**"
           ]
         }
       ],
