@@ -1,4 +1,4 @@
-# Run tests in Visual Studio
+﻿# Run tests in Visual Studio
 
 ## Viewing and selecting tests
 
@@ -53,7 +53,7 @@ For tests that should be run on the virtual device, the test platform starts a s
 
 For tests that should be run on real hardware, the test platform examines which of the available devices can run the selected tests, based on the test attributes. The selected tests are deployed and run on the device one test project at a time. The test platform tries to optimize the device selection to shorten the time it takes to run the unit tests. Tests on different devices run in parallel.
 
-**Beware** that the preparation of a real hardware device to run tests can require a lot of time (tens of seconds). The total time it takes is reported in the test results. Errors are also reported in the test results. Change the [logging](controlling-the-test-execution#content-of-a-configuration-file) to *Verbose* to include information about the steps within the initialization, or to *Detailed* to get even more information. With *Detailed* logging the test result also shows why a test was (not) run on an available real hardware device.
+**Beware** that the preparation of a real hardware device to run tests can require a lot of time (tens of seconds). In the Output window under Tests you can see some progress information. The total time it takes is reported in the test results. Errors are also reported in the test results. Change the [logging](controlling-the-test-execution#content-of-a-configuration-file) to *Verbose* to include information about the steps within the initialization, or to *Detailed* to get even more information. With *Detailed* logging the test result also shows why a test was (not) run on an available real hardware device.
 
 Which of the available devices are actually used can be limited via a [per-user configuration](controlling-the-test-execution#configuration-file-hierarchy) or by temporarily disconnecting a device. If you have reserved serial ports for the Virtual nanoDevice, make sure to add the ports to *ExcludeSerialPorts* (or exclude the ports from *AllowSerialPorts*).
 

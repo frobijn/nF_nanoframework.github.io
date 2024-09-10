@@ -18,7 +18,7 @@ The first time the unit test project is (re)built, the v3 test platform updates 
 
 - The `nano.runsettings` file is migrated to a v3 `nano.runsettings`/`nano.runsettings.user` pair and a `nano.vstest.runsettings` file. If there are no settings to store in one of the files, that file is not created/removed. Be aware the the v2 `RealHardwarePort` setting is migrated to the `nano.runsettings.user` file that is no longer stored in the git repository.
 
-Visual Studio will ask whether to reload the project; answer "Reload all". It may be necessary to restart Visual Studio.
+Visual Studio will ask whether to reload the project; answer "Reload all". It may be necessary to restart Visual Studio. If the tests still not show up in the Test Explorer, it may even be necessary to delete the `.vs` directory.
 
 No code changes are required, unless the test project has test classes that are inadvertently non-public. The v2 test platform doesn't care about the visibility of test classes and will discover the test, but the v3 test platform (and all other test frameworks) only takes public test classes into account and ignores internal classes.
 

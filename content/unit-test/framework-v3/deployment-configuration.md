@@ -10,9 +10,13 @@ The deployment configuration is a collection of key/value pairs. The key/value c
 
 ```json
 {
-    "RGB LED I/O port": 48,
-    "SSID name": "DevRouter",
-    "DevBoard configuration": { "File": "../DevBoards/TestBoard_S3N32R8V_OV2640.cfg" }
+    "DisplayName": "Development kit #1",
+    "Configuration": 
+    {
+        "RGB LED I/O port": 48,
+        "SSID name": "DevRouter",
+        "DevBoard configuration": { "File": "../DevBoards/TestBoard_S3N32R8V_OV2640.cfg" }
+    }
 }
 ```
 
