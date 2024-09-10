@@ -1,6 +1,6 @@
-# .NET **nanoFramework** Unit Tests platform v2
+# .NET **nanoFramework** Unit Tests platform v3
 
-**nanoFramework** has long offered a complete Unit Tests platform called `nanoFramework.TestFramework`. Version 2 of the platform offers an improved user experience, fine-grained control over the execution of tests and an easy way to debug unit tests.
+**nanoFramework** has long offered a complete Unit Tests platform called `nanoFramework.TestFramework`. Version 3 of the platform offers an improved user experience, fine-grained control over the execution of tests and an easy way to debug unit tests.
 
 ## What is nanoFramework.TestFramework
 
