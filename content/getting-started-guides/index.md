@@ -15,6 +15,7 @@ There are available ready to flash firmware images for several targets, please c
 - [Getting started with VS Code extension](getting-started-vs-code.md)
 - [Compare .NET **nanoFramework** with .NET IoT](dotnet-iot-core-vs-nanoframework.md)
 - [Virtual Device](virtual-device.md)
+- [Getting started versioning guide](getting-started-versioning.md)
 
 ## Build instructions
 
