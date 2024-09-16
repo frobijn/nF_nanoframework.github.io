@@ -39,7 +39,9 @@ It is not necessary to use local copies of the Visual Studio and VSCode extensio
 
 ## Prepare for controlled updates
 
-To use the controlled update strategy, you have to configure your projects, solutions and/or repository. To demonstrate how that is done, the description in this section applies to the simplest case where you have a repository with projects and solutions for an application that runs on device type(s) that require one or more firmware packages. More complex cases can be configured in similar ways.
+To use the controlled update strategy, you have to configure your projects, solutions and/or repository. To demonstrate how that is done, the description in this section applies to the simplest case where you have a repository with projects and solutions for an application that runs on device type(s) that require one or more firmware packages.
+
+### Use local copies of tools
 
 Assuming you are using a git/version-controlled repository to store the local copies, create a directory at the root of the repository, e.g., `<repository>\nanoFramework`. Install local copies of the .NET **nanoFramework** tools:
 
@@ -64,28 +66,20 @@ From now on, if you want to ready a device for use in the projects, use the extr
 ```
 The *--suppressnanoffversioncheck* is optional and stops *nanoff* from checking whether a new version of *nanoff* is available. Even if the option is omitted and there is a new version, *nanoff* will not automatically be updated.
 
+### Configure projects
+
 Create a configuration file `<repository>\nanoFramework\nano.devices.json` with the path to the local copy of the Virtual Device and a list of the device types you plan to use. You provide a name for the device type (that is not *Virtual nanoDevice*) and specify the firmware to use, e.g.:
 ```json
 {
     "PathToLocalNanoCLR": "Tools/nanoclr.exe",
     "VirtualDeviceSerialPort": "COM30",
     "FirmwareArchivePath": "Firmware",
-    "DeviceTypes": {
+    "DeviceTypeTargets": {
         "Primary device": "ESP32_S3_ALL",
         "Alternative": "ESP32_S3_BLE"
     }
 }
 ```
-If you plan to use the [test framework](../unit-test/framework-v3/index.md), create the `<repository>\nanoFramework\nano.runsettings` file:
-```xml
-<?xml version=""1.0"" encoding=""utf-8""?>
-<RunSettings>
-    <nanoFrameworkAdapter>
-        <PathToLocalNanoCLR>Tools\nanoclr.exe</PathToLocalNanoCLR>
-    </nanoFrameworkAdapter>
-</RunSettings>
-```
-Optionally set other [global options](../unit-test/framework-v3/controlling-the-test-execution.md) via this file.
 
 For each .NET **nanoFramework** project add the *nanoFramework.Versioning* NuGet package. The package installs an MSBuild task that verifies after each build whether the project's assembly and its dependencies can be deployed to the intended device types. The task gets its data from a `nano.devices.json` file in the project directory that lists the devices the project will be deployed on, either for testing, debugging or as part of the final product: 
 ```json
@@ -104,22 +98,14 @@ Instead of device names the platform can also be used, e.g.:
     "DeviceTypes": {
         "Virtual nanoDevice"
     },
-    Platforms: {
+    "Platforms": {
         "ESP32"
     }
 }
 ```
 The `nano.devices.json` file is used only by the MSBuild task; it is not used by the test platform to determine on which of the connected devices the tests should be executed, and the Visual Studio/VSCode extension allows for the deployment of an application to any connected device.
 
-If the project is a test project, also add a `nano.runsettings` file:
-```xml
-<?xml version=""1.0"" encoding=""utf-8""?>
-<RunSettings>
-    <nanoFrameworkAdapter>
-        <GlobalSettingsDirectoryPath>...relative path to <repository>\nanoFramework...</GlobalSettingsDirectoryPath>
-    </nanoFrameworkAdapter>
-</RunSettings>
-```
+### Set the default for Virtual Device
 
 Optionally create a `nano.devices.json` file in a folder that contains a Visual Studio solution that contains projects that can be deployed via F5 to a Virtual Device with only:
 ```json
@@ -128,3 +114,53 @@ Optionally create a `nano.devices.json` file in a folder that contains a Visual 
 }
 ```
 The Visual Studio extension will read this and use the local copy of the virtual device and serial port as defaults when starting the Virtual Device in the Device Explorer.
+
+### Add NuGet packages to projects
+
+It is possible at any time in the development process to add new NuGet packages for the framework's class libraries to a project, or to upgrade to a newer version. Start by using the latest version and build the project immediately. The MSBuild task will check whether the package version is consistent with the selected versions of the firmware. If that is not the case, install an earlier version of the package and rebuild the project. Repeat until the package version is consistent.
+
+All of the framework's NuGet packages and many packages of the community's packages can be found by searching for the keyword *nanoframework*. To get a list of compatible versions, download nuget.exe at the time the frozen framework version is selected and run:
+```
+nuget list nanoFramework > <repository>\nanoFramework\NuGetPackageList.txt
+```
+or
+```
+nuget list nanoFramework -verbosity detailed > <repository>\nanoFramework\NuGetPackageList.txt
+```
+The *NuGetPackageList.txt* file lists the version of all framework packages that are compatible with the frozen firmware version.
+
+## Controlled updates for complex projects
+
+The controlled update strategy can also be used for more complex project, e.g., that consists of multiple applications that run on different devices. In the previous section a hierarchical configuration with one global `nano.devices.json` and one file per project was described. In a complex projects the `nano.devices.json` can be used to create a more elaborate hierarchy of configurations.
+
+The MSBuild task starts by reading the `nano.devices.json` file in the project directory. The file can have any of the settings:
+```json
+{
+    "GlobalSettingsDirectoryPath": "relative path to <repository>\nanoFramework",
+    "PathToLocalNanoCLR": "Tools/nanoclr.exe",
+    "PathToLocalCLRInstance": "Tools/nanoclr.bin",
+    "VirtualDeviceSerialPort": "COM30",
+    "FirmwareArchivePath": "Firmware",
+    "DeviceTypeTargets": {
+        "Primary device": "ESP32_S3_ALL",
+        "Alternative": "ESP32_S3_BLE"
+    },
+    "DeviceTypes": {
+        "Primary device",
+        "Virtual nanoDevice"
+    },
+    "Platforms": {
+        "ESP32"
+    }
+}
+```
+with:
+
+- `GlobalSettingsDirectoryPath` is the path to the directory containing another `nano.devices.json` file. That file is read first, then the content of this file is used to overwrite the settings per top-level element that is present (*PathToLocalNanoCLR*, *DeviceTypeTargets*, etc.)
+- `PathToLocalNanoCLR` is the path to the `nanoclr.exe` file that is used to run the Virtual Device. If it is not present, the global tool is used.
+- `PathToLocalCLRInstance` is the path to a file that implements an alternative Virtual Device runtime.
+- `VirtualDeviceSerialPort` is the serial port to use for a Virtual nanoDevice where applications can be deployed to.
+- `FirmwareArchivePath` is the path to the firmware archive; this is the same path as used in the `--fwarchivepath` argument to *nanoff*.
+- `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name cannot be *Virtual nanoDevice*.
+- `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual Device (nanoclr.exe), all other names must have been defined in *DeviceTypeTargets*.
+- `Platforms`is a list of platforms the project is designed to be deployed to. This is shorthand to select all named devices in *DeviceTypeTargets* that match the specified platform.
