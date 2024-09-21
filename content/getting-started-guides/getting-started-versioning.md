@@ -59,6 +59,12 @@ If you are not sure which devices you will be using, collect all packages for a 
 ```
 <repository>\nanoFramework\Tools\nanoff --platform ESP32 --updatefwarchive --fwarchivepath <repository>\nanoFramework\Firmware
 ```
+If you expect the framework version not to be updated for a long time (e.g. in case your product has a long lifetime and software development is paused for most of the time), also keep a separate instance of the runtime of the *nanoclr.exe* tool, *WIN_DLL_nanoCLR*:
+```
+<repository>\nanoFramework\Tools\nanoff --target WIN_DLL_nanoCLR --updatefwarchive --fwarchivepath <repository>\nanoFramework\Firmware
+```
+If in future the *nanoclr.exe* tool has to be updated, e.g., because of dependencies on third-party software, this Virtual Device runtime that matches your application is still available.
+
 From now on, if you want to ready a device for use in the projects, use the extra *fwarchive*-options to use the local copy of the firmware packages rather than the ones from the online repository, e.g.:
 ```
 <repository>\nanoFramework\Tools\nanoff --suppressnanoffversioncheck --listtargets --serialport COM3 --update --fromfwarchive --fwarchivepath <repository>\nanoFramework\Firmware
@@ -138,12 +144,14 @@ The MSBuild task starts by reading the `nano.devices.json` file in the project d
 {
     "GlobalSettingsDirectoryPath": "relative path to <repository>\nanoFramework",
     "PathToLocalNanoCLR": "Tools/nanoclr.exe",
-    "PathToLocalCLRInstance": "Tools/nanoclr.bin",
+    "PathToLocalCLRInstanceDirectory": "Firmware/WIN_DLL_nanoCLR-1.12.0.53",
     "VirtualDeviceSerialPort": "COM30",
+    "ReservedSerialPorts": ["COM30", "COM31", "COM32", "COM33"],
     "FirmwareArchivePath": "Firmware",
     "DeviceTypeTargets": {
         "Primary device": "ESP32_S3_ALL",
-        "Alternative": "ESP32_S3_BLE"
+        "Alternative": "ESP32_S3_BLE",
+        "Test devices": ["ESP32_S3", "ESP32_S3_ALL", "ESP32_S3_BLE"]
     },
     "DeviceTypes": {
         "Primary device",
@@ -158,9 +166,12 @@ with:
 
 - `GlobalSettingsDirectoryPath` is the path to the directory containing another `nano.devices.json` file. That file is read first, then the content of this file is used to overwrite the settings per top-level element that is present (*PathToLocalNanoCLR*, *DeviceTypeTargets*, etc.)
 - `PathToLocalNanoCLR` is the path to the `nanoclr.exe` file that is used to run the Virtual Device. If it is not present, the global tool is used.
-- `PathToLocalCLRInstance` is the path to a file that implements an alternative Virtual Device runtime.
-- `VirtualDeviceSerialPort` is the serial port to use for a Virtual nanoDevice where applications can be deployed to.
+- `PathToLocalCLRInstanceDirectory` is the path to a directory that contains a file `nanoFramework.nanoCLR.dll`. The latter implements an alternative Virtual Device runtime. If this is not present, the runtime embedded in `nanoclr.exe` is used.
+- `VirtualDeviceSerialPort` is the serial port to use for a Virtual nanoDevice where applications can be deployed to. The default is "COM30". This setting is used by the Device Explorer of the Visual Studio extension and only has effect if it is present in a `nano.devices.json` in the solution directory or in one of the `nano.devices.json` included by that file.
+- `ReservedSerialPorts` is an array of serial ports reserved for use by, e.g., a Virtual nanoDevice. This setting is used by the Device Explorer of the Visual Studio extension; these ports are excluded from the device discovery unless one of the ports is specified as as value for *VirtualDeviceSerialPort*. This allows to have two versions of the framework within a repository, each with its own Virtual nanoDevice running on a dedicated serial port. The setting only has effect if it is present in a `nano.devices.json` in the solution directory or in one of the `nano.devices.json` included by that file.
 - `FirmwareArchivePath` is the path to the firmware archive; this is the same path as used in the `--fwarchivepath` argument to *nanoff*.
-- `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name cannot be *Virtual nanoDevice*.
-- `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual Device (nanoclr.exe), all other names must have been defined in *DeviceTypeTargets*.
-- `Platforms`is a list of platforms the project is designed to be deployed to. This is shorthand to select all named devices in *DeviceTypeTargets* that match the specified platform.
+- `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name cannot be *Virtual nanoDevice*. The target can be a single name or an array. If this element is present in a global and local `nano.devices.json`, the targets per name are overwritten rather than the *DeviceTypeTargets* list.
+- `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual Device (nanoclr.exe), all other names must have been defined in *DeviceTypeTargets*. 
+- `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all named devices in *DeviceTypeTargets* that match the specified platform.
+
+If the `%USERPROFILE%\.nanoFramework\nano.devices.json` file exists it is always read first, and only the `ReservedSerialPorts` setting is used. This file can be used to exclude other (machine dependent) serial ports that should not be touched by the .NET **nanoFramework** tools.
