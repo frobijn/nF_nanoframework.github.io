@@ -27,11 +27,11 @@ Every .NET **nanoFramework** tool auto-update itself, or at least shows a messag
 
 ## Controlled update
 
-Especially in commercial projects the auto-update strategy may not be feasible. An update of one of the packages or firmware may require planning and coordination with other teams. All your development and testing is done with a single version of the framework's packages and tools. You should still plan to update to the latest version of the framework regularly, if only to profit from bug fixes. But the actual update to a new version (if there is one) is planned and executed when there is time to assert that your application and device is still working correctly after the update.
+Especially in commercial projects the auto-update strategy may not be feasible. An update of one of the packages or firmware may require planning and coordination with other teams. You and all your colleagues must use the same version of the framework's packages and tools. You should still plan to update to the latest version of the framework regularly, if only to profit from bug fixes. But the actual update to a new version (if there is one) is planned and executed when there is time to assert that your application and device is still working correctly after the update.
 
-Instead of using the latest version, you are using a version that is frozen in time. At the start of a project, you make a local copy of the firmware packages for your devices and of the *nanoff* tool and Virtual Device. You only use the NuGet packages that are current at that time. If you deploy firmware to a (new) device, you'll use the local copy of *nanoff* and of the firmware. In unit testing and debugging you use the local copy of the Virtual Device.
+Instead of using the latest version, you are using a version that is frozen in time. At the start of a project, you make a local copy of the firmware packages for your devices and of the *nanoff* tool and Virtual Device. You only use the NuGet packages that are current at that time, or at least NuGet packages that match the frozen firmware. If you deploy firmware to a (new) device, you'll use the local copy of *nanoff* and of the firmware. In unit testing and debugging you use the local copy of the Virtual Device.
 
-While you are developing, it may become necessary to use additional NuGet packages. Or you may encounter an issue with one of the NuGet packages that can be resolved by a bug fix of the class library only. (The community welcomes any PR with a resolution of an issue!) If your project allows to start using new (versions of) NuGet packages, you want to be sure from the start that the packages are consistent with the frozen version of the firmware. Add the *nanoFramework.Versioning* NuGet package to each project, it will verify the consistency of NuGet packages and the selected firmware versions when the software is built.
+While you are developing, it may become necessary to use additional NuGet packages. Or you may encounter an issue with one of the NuGet packages that can be resolved by a bug fix of the class library only. (The community welcomes any PR with a resolution of an issue!) If your project allows to start using new (versions of) NuGet packages, you want to be sure from the start that the packages are consistent with the frozen version of the firmware. Add the *nanoFramework.Versioning* NuGet package and the `nano.devices.json` configuration file to each project, it will verify the consistency of NuGet packages and the selected firmware versions when the software is built.
 
 If you are ready to update to a new version, freeze the then-current version of the NuGet and firmware packages and tools. Deploy the new firmware to test devices and re-test your application. If all tests succeed, keep the version and proceed to develop/test with that version.
 
@@ -41,7 +41,7 @@ It is not necessary to use local copies of the Visual Studio and VSCode extensio
 
 To use the controlled update strategy, you have to configure your projects, solutions and/or repository. To demonstrate how that is done, the description in this section applies to the simplest case where you have a repository with projects and solutions for an application that runs on device type(s) that require one or more firmware packages.
 
-### Use local copies of tools
+### Use local copies of tools and firmware
 
 Assuming you are using a git/version-controlled repository to store the local copies, create a directory at the root of the repository, e.g., `<repository>\nanoFramework`. Install local copies of the .NET **nanoFramework** tools:
 
@@ -54,7 +54,11 @@ Collect the firmware packages you need for your devices. E.g.:
 ```
 <repository>\nanoFramework\Tools\nanoff --target ESP32_S3_ALL --updatefwarchive --fwarchivepath <repository>\nanoFramework\Firmware
 ```
-If you don't know what firmware to use but have the device connected to the PC, use *nanoff --preview* to find the most suitable firmware.
+If you don't know what firmware to use but have a new device connected to the PC, you may find the best matching firmware via:
+```
+<repository>\nanoFramework\Tools\nanoff --platform ESP32 --showfwonly --serialport COM9
+```
+This works for selected platforms only.
 If you are not sure which devices you will be using, collect all packages for a platform.
 ```
 <repository>\nanoFramework\Tools\nanoff --platform ESP32 --updatefwarchive --fwarchivepath <repository>\nanoFramework\Firmware
@@ -72,11 +76,24 @@ From now on, if you want to ready a device for use in the projects, use the extr
 ```
 The *--suppressnanoffversioncheck* is optional and stops *nanoff* from checking whether a new version of *nanoff* is available. Even if the option is omitted and there is a new version, *nanoff* will not automatically be updated.
 
+### Keep a record of the NuGet packages that are current
+
+All of the framework's NuGet packages and many packages of the community's packages can be found by searching for the keyword *nanoframework*. To get a list of compatible versions, download nuget.exe at the time the frozen framework version is selected and run:
+```
+nuget list nanoFramework > <repository>\nanoFramework\NuGetPackageList.txt
+```
+or
+```
+nuget list nanoFramework -verbosity detailed > <repository>\nanoFramework\NuGetPackageList.txt
+```
+The *NuGetPackageList.txt* file lists the version of all framework packages that are compatible with the frozen firmware version.
+
 ### Configure projects
 
 Create a configuration file `<repository>\nanoFramework\nano.devices.json` with the path to the local copy of the Virtual Device and a list of the device types you plan to use. You provide a name for the device type (that is not *Virtual nanoDevice*) and specify the firmware to use, e.g.:
 ```json
 {
+    "NuGetPackageList": "NuGetPackageList.txt",
     "PathToLocalNanoCLR": "Tools/nanoclr.exe",
     "VirtualDeviceSerialPort": "COM30",
     "FirmwareArchivePath": "Firmware",
@@ -123,17 +140,7 @@ The Visual Studio extension will read this and use the local copy of the virtual
 
 ### Add NuGet packages to projects
 
-It is possible at any time in the development process to add new NuGet packages for the framework's class libraries to a project, or to upgrade to a newer version. Start by using the latest version and build the project immediately. The MSBuild task will check whether the package version is consistent with the selected versions of the firmware. If that is not the case, install an earlier version of the package and rebuild the project. Repeat until the package version is consistent.
-
-All of the framework's NuGet packages and many packages of the community's packages can be found by searching for the keyword *nanoframework*. To get a list of compatible versions, download nuget.exe at the time the frozen framework version is selected and run:
-```
-nuget list nanoFramework > <repository>\nanoFramework\NuGetPackageList.txt
-```
-or
-```
-nuget list nanoFramework -verbosity detailed > <repository>\nanoFramework\NuGetPackageList.txt
-```
-The *NuGetPackageList.txt* file lists the version of all framework packages that are compatible with the frozen firmware version.
+It is possible at any time in the development process to add new NuGet packages for the framework's class libraries to a project. Start by using the version listed in *NuGetPackageList.txt* - that is guaranteed to work. Build the project immediately. The MSBuild task will verify that the correct version of the NuGet package is used, and it will also check whether the package version is consistent with the selected versions of the firmware.
 
 ## Controlled updates for complex projects
 
@@ -143,6 +150,7 @@ The MSBuild task starts by reading the `nano.devices.json` file in the project d
 ```json
 {
     "GlobalSettingsDirectoryPath": "relative path to <repository>\nanoFramework",
+    "NuGetPackageList": "NuGetPackageList.txt",
     "PathToLocalNanoCLR": "Tools/nanoclr.exe",
     "PathToLocalCLRInstanceDirectory": "Firmware/WIN_DLL_nanoCLR-1.12.0.53",
     "VirtualDeviceSerialPort": "COM30",
@@ -153,25 +161,26 @@ The MSBuild task starts by reading the `nano.devices.json` file in the project d
         "Alternative": "ESP32_S3_BLE",
         "Test devices": ["ESP32_S3", "ESP32_S3_ALL", "ESP32_S3_BLE"]
     },
-    "DeviceTypes": {
+    "DeviceTypes": [
         "Primary device",
         "Virtual nanoDevice"
-    },
-    "Platforms": {
+    ],
+    "Platforms": [
         "ESP32"
-    }
+    ]
 }
 ```
 with:
 
 - `GlobalSettingsDirectoryPath` is the path to the directory containing another `nano.devices.json` file. That file is read first, then the content of this file is used to overwrite the settings per top-level element that is present (*PathToLocalNanoCLR*, *DeviceTypeTargets*, etc.)
+- `NuGetPackageList` is the path to a file that lists the allowed versions of the NuGet packages to use. The name of the package should be at the start of the line, followed by whitespace (end of line allowed) and the version of the package. The file format is consistent with the output of `nuget list` at the time of writing. If *NuGetPackageList* is omitted, the versions of the NuGet packages is not checked by the *nanoFramework.Versioning* MSBuild task but the consistency of .NET assemblies and firmware packages is still possible.
 - `PathToLocalNanoCLR` is the path to the `nanoclr.exe` file that is used to run the Virtual Device. If it is not present, the global tool is used.
 - `PathToLocalCLRInstanceDirectory` is the path to a directory that contains a file `nanoFramework.nanoCLR.dll`. The latter implements an alternative Virtual Device runtime. If this is not present, the runtime embedded in `nanoclr.exe` is used.
 - `VirtualDeviceSerialPort` is the serial port to use for a Virtual nanoDevice where applications can be deployed to. The default is "COM30". This setting is used by the Device Explorer of the Visual Studio extension and only has effect if it is present in a `nano.devices.json` in the solution directory or in one of the `nano.devices.json` included by that file.
 - `ReservedSerialPorts` is an array of serial ports reserved for use by, e.g., a Virtual nanoDevice. This setting is used by the Device Explorer of the Visual Studio extension; these ports are excluded from the device discovery unless one of the ports is specified as as value for *VirtualDeviceSerialPort*. This allows to have two versions of the framework within a repository, each with its own Virtual nanoDevice running on a dedicated serial port. The setting only has effect if it is present in a `nano.devices.json` in the solution directory or in one of the `nano.devices.json` included by that file.
 - `FirmwareArchivePath` is the path to the firmware archive; this is the same path as used in the `--fwarchivepath` argument to *nanoff*.
 - `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name cannot be *Virtual nanoDevice*. The target can be a single name or an array. If this element is present in a global and local `nano.devices.json`, the targets per name are overwritten rather than the *DeviceTypeTargets* list.
-- `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual Device (nanoclr.exe), all other names must have been defined in *DeviceTypeTargets*. 
+- `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual Device (nanoclr.exe), all other names must have been defined in *DeviceTypeTargets*.
 - `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all named devices in *DeviceTypeTargets* that match the specified platform.
 
-If the `%USERPROFILE%\.nanoFramework\nano.devices.json` file exists it is always read first, and only the `ReservedSerialPorts` setting is used. This file can be used to exclude other (machine dependent) serial ports that should not be touched by the .NET **nanoFramework** tools.
+If the `%USERPROFILE%\.nanoFramework\nano.devices.json` file on Windows (`%HOME%/.nanoFramework/nano.devices.json` on other platforms) exists it is always read first, and only the `ReservedSerialPorts` setting is used. The value of this setting is merged with the corresponding value of a project's or solution's `nano.devices.json` file. The user-specific configuration can be used to exclude other (machine dependent) serial ports that should not be touched by the .NET **nanoFramework** tools.
