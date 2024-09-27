@@ -104,7 +104,7 @@ Create a configuration file `<repository>\nanoFramework\nano.devices.json` with 
 }
 ```
 
-For each .NET **nanoFramework** project add the *nanoFramework.Versioning* NuGet package. The package installs an MSBuild task that verifies after each build whether the project's assembly and its dependencies can be deployed to the intended device types. The task gets its data from a `nano.devices.json` file in the project directory that lists the devices the project will be deployed on, either for testing, debugging or as part of the final product: 
+For each .NET **nanoFramework** project add the *nanoFramework.Versioning* NuGet package. The package installs an MSBuild task that verifies after each build whether the project's assembly and its dependencies can be deployed to the intended device types. The task does not run if the project does not have to be built. The task gets its data from a `nano.devices.json` file in the project directory that lists the devices the project will be deployed on, either for testing, debugging or as part of the final product: 
 ```json
 {
     "GlobalSettingsDirectoryPath": "relative path to <repository>\nanoFramework",
@@ -142,6 +142,16 @@ The Visual Studio extension will read this and use the local copy of the virtual
 
 It is possible at any time in the development process to add new NuGet packages for the framework's class libraries to a project. Start by using the version listed in *NuGetPackageList.txt* - that is guaranteed to work. Build the project immediately. The MSBuild task will verify that the correct version of the NuGet package is used, and it will also check whether the package version is consistent with the selected versions of the firmware.
 
+## What about partially updating the nanoFramework components?
+
+You may be wondering if it is possible to adopt the controlled update strategy and update only part of the components. E.g., only updating a NuGet package or using the next version of firmware. The answer is: yes, maybe and no.
+
+Yes, because the interface between the .NET **nanoFramework** assemblies and the firmware for the various devices does not change much. An updated firmware version may have bug fixes that are unrelated to any of the assemblies in NuGet packages, so using updated firmware is perfectly possible. Similarly the code for one of the NuGet packages may be updated without having to change anything in the firmware. None of the **nanoFramework** tools will detect any error, your application can be deployed to devices running the new firmware, and everything works fine.
+
+Maybe, because bug fixes and new features of the framework components are only developed and tested as a change of the current version. It may be possible to use a newer version of the firmware with older NuGet packages, but nobody has tested that. It is possible that the old NuGet package has a bug that never surfaces with the old firmware, but it does with the new firmware and that is solved in the updated NuGet package. Given the number of combinations of versions of packages, it is impossible to test all of them.
+
+So the answer is no, you shouldn't do that. You choose the controlled update strategy because you don't want to solve issues with incompatible framework components. Then you always should use a version of each component that is current at the moment you freeze the version. If you require bug fixes of features of newer versions of firmware or NuGet packages, update *all* firmware and packages and take some time to ensure those work with your application.
+
 ## Controlled updates for complex projects
 
 The controlled update strategy can also be used for more complex project, e.g., that consists of multiple applications that run on different devices. In the previous section a hierarchical configuration with one global `nano.devices.json` and one file per project was described. In a complex projects the `nano.devices.json` can be used to create a more elaborate hierarchy of configurations.
@@ -173,7 +183,7 @@ The MSBuild task starts by reading the `nano.devices.json` file in the project d
 with:
 
 - `GlobalSettingsDirectoryPath` is the path to the directory containing another `nano.devices.json` file. That file is read first, then the content of this file is used to overwrite the settings per top-level element that is present (*PathToLocalNanoCLR*, *DeviceTypeTargets*, etc.)
-- `NuGetPackageList` is the path to a file that lists the allowed versions of the NuGet packages to use. The name of the package should be at the start of the line, followed by whitespace (end of line allowed) and the version of the package. The file format is consistent with the output of `nuget list` at the time of writing. If *NuGetPackageList* is omitted, the versions of the NuGet packages is not checked by the *nanoFramework.Versioning* MSBuild task but the consistency of .NET assemblies and firmware packages is still possible.
+- `NuGetPackageList` is the path to a file that lists the allowed versions of the NuGet packages to use. The name of the package should be at the start of the line, followed by whitespace (optionally including an end of line) and the version of the package. The file format is consistent with the output of `nuget list` at the time of writing. If *NuGetPackageList* is omitted, the versions of the NuGet packages are not checked by the *nanoFramework.Versioning* MSBuild task but the consistency of .NET assemblies and firmware packages is still possible.
 - `PathToLocalNanoCLR` is the path to the `nanoclr.exe` file that is used to run the Virtual Device. If it is not present, the global tool is used.
 - `PathToLocalCLRInstanceDirectory` is the path to a directory that contains a file `nanoFramework.nanoCLR.dll`. The latter implements an alternative Virtual Device runtime. If this is not present, the runtime embedded in `nanoclr.exe` is used.
 - `VirtualDeviceSerialPort` is the serial port to use for a Virtual nanoDevice where applications can be deployed to. The default is "COM30". This setting is used by the Device Explorer of the Visual Studio extension and only has effect if it is present in a `nano.devices.json` in the solution directory or in one of the `nano.devices.json` included by that file.
