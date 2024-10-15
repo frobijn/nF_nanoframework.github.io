@@ -12,6 +12,7 @@ architecture
 building
 hal-pal
 unit-test
+versioning
 licensing
 support
 maintainers

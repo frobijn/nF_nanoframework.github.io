@@ -42,6 +42,16 @@ In the .NET **nanoFramework** architecture all native components have to be part
 
 Once a native component of your application is part of the runtime, it is treated in the same way as the native .NET **nanoFramework** components. The framework does not make a distinction between framework and non-framework native components.
 
+## Virtual nanoDevice
+
+The .NET **nanoFramework** offers a Virtual nanoDevice that can be run on Windows.
+
+![Virtual nanoDevice](../../images/architecture-deployment-nanoclr.png)
+
+It consists of a host application, a limited implementation of the nanoFramework CLR, and space to deploy an application to. File storage is not support at the time of writing.
+
+The Virtual nanoDevice is distributed as a tool, [nanoclr](../getting-started-guides/virtual-device.md), that already contains a version of the nanoFramework CLR firmware. The firmware is also available as *WIN_DLL_nanoCLR* from the target repository, that can be loaded into and used by the Virtual nanoDevice instead of the built-in version of the CLR.
+
 ## Packaging and distribution of the .NET application and libraries
 
 The .NET components of your application and the .NET **nanoFramework** framework components included via NuGet packages can be deployed to the device in three phases of the development cycle.
@@ -86,6 +96,10 @@ The consistency of references from managed assemblies to the native components i
 
 The description so far may give the impression that the .NET **nanoFramework** tools that support the packaging and deployment are independent of the packages the tools work with. That is not the case, there are a few interdependencies.
 
-All tools except *nanoff* (and *nanoff* for additional files) do not write directly to the flash memory of a device. Instead they use a limited part of the [wire protocol](wire-protocol.md) to send the *.pe*-files to the device, and the (already deployed) runtime writes to flash memory. The tool and the deployed runtime have to have the same perception that part of the wire protocol; (breaking) changes in the protocol may lead to incompatibility of tools and runtimes. Fortunately the wire protocol is very stable and changes are few and far between.
+All tools except *nanoff* do not write directly to the flash memory of a device. Instead they use a limited part of the [wire protocol](wire-protocol.md) to send the *.pe*-files to the device, and the (already deployed) runtime writes to flash memory. The tool and the deployed runtime have to have the same perception that part of the wire protocol; (breaking) changes in the protocol may lead to incompatibility of tools and runtimes. Fortunately the wire protocol is very stable and changes are few and far between.
+
+Examples of tools that use the wire protocol are the [Visual Studio extension](../getting-started-guides/getting-started-managed.md) and the [test framework](../unit-test). The *nanoff* tool also uses the wire protocol for some operations.
 
 The *nanoff* tool has some hard-coded logic to select the most suitable pre-packaged runtime/target for a particular device. The runtime package does not contain sufficient information to link the (device manufacturer's specific) description that a device provides to the *nanoff* tool to the suitability of the runtime. E.g., a runtime may target a particular model of microcontroller, but if the microcontroller is part of a development kit, *nanoff* may receive an identification of the kit when querying the device instead of an identification of the microcontroller. If new pre-packaged runtimes/targets become available, the *nanoff* tool may require an update. The selection mechanism can always be bypassed by explicitly specifying the runtime/target to deploy.
+
+The Windows host of the Virtual nanoDevice *nanoclr* does not depend on functionality in the nanoFramework CLR; it relies on a common interface with the *WIN_DLL_nanoCLR* to delegate the deployment and wire protocol communication to the *WIN_DLL_nanoCLR* runtime. The *nanoclr* tool contains a version of the *WIN_DLL_nanoCLR* runtime, but that can be overwritten by any other version of that runtime that supports the same interface.
