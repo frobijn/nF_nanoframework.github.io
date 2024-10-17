@@ -155,20 +155,20 @@ An overview of the settings that are used by the various .NET **nanoFramework** 
 
 | Setting | Used by |
 | ------- | ------- |
-| NuGetPackageList | [Consistency verification task](#consistency-verification-task)^1^ |
+| NuGetPackageList | [Consistency verification task](#consistency-verification-task)<sup>1</sup> |
 | PathToLocalNanoFF | Not used by .NET **nanoFramework** tools but may be used by custom (community) tools. |
-| PathToLocalNanoCLR | Consistency verification task, Visual Studio extension^2^, test framework^3^ |
-| FirmwareArchivePath | Consistency verification task^1^, Visual Studio extension^2^, test framework^3^ |
-| PathToLocalCLRDirectory | Consistency verification task, Visual Studio extension^2^, test framework^3^ |
-| VirtualDeviceSerialPort | Visual Studio extension^2^ |
-| ReservedSerialPorts | Visual Studio extension^2^, test framework^3^ |
-| DeviceTypeTargets | Consistency verification task^1^ |
-| DeviceTypes | Consistency verification task^1^ |
+| PathToLocalNanoCLR | Consistency verification task, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
+| FirmwareArchivePath | Consistency verification task<sup>1</sup>, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
+| PathToLocalCLRDirectory | Consistency verification task, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
+| VirtualDeviceSerialPort | Visual Studio extension<sup>2</sup> |
+| ReservedSerialPorts | Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
+| DeviceTypeTargets | Consistency verification task<sup>1</sup> |
+| DeviceTypes | Consistency verification task<sup>1</sup> |
 | Platforms | Consistency verification task |
 
-^1^ This setting is required.
-^2^ Taken from the `nano.devices.json` that is located in the directory of the solution that has been opened in Visual Studio. The `nano.devices.json` in project directories are ignored.
-^3^ Applies to the [latest version](../unit-test/framework-v3) of the test framework.
+<sup>1</sup> This setting is required.
+<sup>2</sup> Taken from the `nano.devices.json` that is located in the directory of the solution that has been opened in Visual Studio. The `nano.devices.json` in project directories are ignored.
+<sup>3</sup> Applies to the [latest version](../unit-test/framework-v3) of the test framework.
 
 ### Hierarchy of configuration files
 

@@ -6,8 +6,6 @@ Fortunately, the .NET **nanoFramework** offers several strategies and tools to h
 
 - [Versioning strategy](versioning-strategies.md): when to update framework tools and components. Can you always use the latest versions of the framework, or do you need time to prepare for an update? 
 
-- [Consistency checks](consistency-checks.md): when to verify that an application can be deployed to a type of device? Is your development time short enough to do the check when the application is deployed to a device? Or do you want to check often and early in the development process?
-
 If you choose to always work with the latest versions and do the consistency checks when the application is deployed to a device, you don't have to any extra work. This is supported out of the box. Otherwise you need to add extra files to your projects:
 
 - [Tools and configuration](tools-configuration.md) to support controlled updates and/or early consistency checks.
