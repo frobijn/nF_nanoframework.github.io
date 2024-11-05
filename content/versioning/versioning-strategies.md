@@ -2,22 +2,25 @@
 
 ## Affected components
 
-To develop, test and deploy an application to a device, you'll need several components and tools. For some tools it is not relevant which version you are using:
-
-- [Visual Studio extension](../getting-started-guides/getting-started-managed.md);
-- [Test framework](../unit-test);
-- The Virtual Device host [nanoclr.exe](../getting-started-guides/virtual-device.md); the version of the included firmware does matter.
-
-These tools can be updated at any time and keep working with the installed versions of other .NET **nanoFramework** components. The Visual Studio extension is by default auto-updated by Visual Studio. The test framework is a NuGet package that can be updated whenever a new package is available. The Virtual Device is a .NET tool that can be updated manually, and is also updated if it is used by the Visual Studio extension and test framework.
-
-The other tools and components cannot bee freely updated, as there are dependencies between the various versions of the components:
+To develop, test and deploy an application to a device, you'll need several components and tools. Some tools and components cannot bee freely updated, as there are dependencies between the various versions of the components:
 
 - NuGet packages with the .NET class libraries.
 - Firmware packages for the various device types/targets.
 - Firmware package for the Virtual Device.
 - The [nanoff](https://github.com/nanoframework/nanoFirmwareFlasher) tool to deploy applications and firmware to a device.
 
+If incompatible component versions are used for a .NET **nanoFramework** application and the application is deployed to a nanoDevice, the application will not be executed.
+
+For other tools it is not relevant which version you are using, in particular:
+
+- [Visual Studio extension](../getting-started-guides/getting-started-managed.md);
+- [Test framework](../unit-test);
+- The Virtual Device host [nanoclr.exe](../getting-started-guides/virtual-device.md), but the version of the included Virtual Device firmware does matter.
+
+These tools can be updated at any time and keep working with the installed versions of other .NET **nanoFramework** components. The Visual Studio extension is by default auto-updated by Visual Studio. The test framework is a NuGet package that can be updated whenever a new package is available. The Virtual Device is a .NET tool that can be updated manually, and is also updated if it is used by the Visual Studio extension and test framework.
+
 ## Supported strategies
+
 How can you make sure that your application uses matching versions of the NuGet and firmware packages and of *nanoff*? 
 
 The CI/CD pipeline of the .NET **nanoFramework** ensures that all packages and tools are consistent with each other at any moment in time. All packages and tools are updated daily (around 0:00 UTC) with the latest enhancements and bug fixes, and if packages depend on each other, the references are updated. In principle, that is. Some tools and packages hardly ever change, there are many days without updates. But if there are enhancements and bug fixes, they will be made available as quickly as possible.

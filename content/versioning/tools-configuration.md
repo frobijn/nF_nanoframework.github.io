@@ -1,6 +1,6 @@
 # Tools and configuration
 
-The .NET **nanoFramework** has out-of-the-box support for the auto-update [versioning strategy](versioning-strategies.md). For the other supported strategies some extra configuration files and tools have to be added.
+The .NET **nanoFramework** has out-of-the-box support for the [auto-update](versioning-strategies.md#auto-update) versioning strategy. For the other supported strategies some extra configuration files and tools have to be added.
 
 The configuration is also used by other tools that require information about the devices relevant for a project. These tools include the [Visual Studio extension](../getting-started-guides/getting-started-managed.md) and the latest version of the [test framework](../unit-test/framework-v3). Custom tools can use the configuration by using the [nanoFramework.Tooling.Devices](https://github.com/nanoframework/nf-tools) library.
 
@@ -8,14 +8,14 @@ The configuration consists of several components, depending on the adopted versi
 
 ![Configurations for versioning strategies](../../images/versioning-devices-configuration.png)
 
-- A [local tools](#local-tools) directory (controlled update strategy only).
-- A [firmware archive](#firmware-archive) that contains the firmware packages for the device types your software is intended to be deployed to.
-- A list of [NuGet packages](#nuget-package-list) used in .NET **nanoFramework** projects.
+- A [firmware archive](#firmware-archive) directory that contains the firmware packages for the device types your software is intended to be deployed to.
+- A [local tools](#local-tools) directory; only required for the controlled update strategy.
+- A file (e.g., *NuGetPackages.txt*) that lists the [NuGet package versions](#nuget-package-list) to be used in .NET **nanoFramework** projects.
 - A description of the [configuration and devices](#configuration-and-devices) as stored in `nano.devices.json` files.
 
 The first three components are created by running commands. These can be combined in an [update script](#update-script) that, in case of the daily update strategy, can be run every day.
 
-To each .NET **nanoFramework** project for which a consistency check is required a [NuGet package](#consistency-verification-task) should be added that verifies the consistency of the NuGet packages used by the project, the packages in the NuGet package list and the firmware for the devices the projects is intended to be deployed to.
+A [NuGet package](#consistency-verification-task) should be added to each .NET **nanoFramework** project for which a consistency check is required. The package installs a MSBuild task that verifies the consistency of the NuGet packages used by the project with the packages in the NuGet package list and the firmware for the devices the projects is intended to be deployed to.
 
 ## Local tools 
 
@@ -26,14 +26,6 @@ In that case use a local copy of the [nanoff](https://github.com/nanoframework/n
 ```
 dotnet tool install nanoff --tool-path <repository>\.nanoFramework\Tools
 ```
-
-If you are not planning to update the nanoFramework components for a long time, e.g., near the end of product development or of the product support period, and if you are using the Virtual nanoDevice for testing, you may consider to create a local copy of the Virtual nanoDevice host [nanoclr](../getting-started-guides/virtual-device.md) as well. This ensures that you always will have the correct host available:
-
-```
-dotnet tool install nanoclr --tool-path <repository>\.nanoFramework\Tools
-```
-
-If you are planning to update the nanoFramework components, you don't have to create a local copy. Use the latest version of the global *nanoclr* tool instead with the archived firmware for the Virtual nanoDevice.
 
 ## Firmware archive
 
@@ -55,7 +47,7 @@ If you are not sure which devices you will be using, collect all packages for a 
 nanoff --platform ESP32 --updatearchive --archivepath <archive-directory>
 ```
 
-If you adopt the controlled update strategy, use the Virtual nanoDevice for testing and use the latest version of the *nanoclr* tool, you have to archive the Virtual nanoDevice runtime (*WIN_DLL_nanoCLR*) as well:
+If you adopt the controlled update strategy and use the Virtual nanoDevice for testing, you have to archive the Virtual nanoDevice runtime (*WIN_DLL_nanoCLR*) as well:
 ```
 nanoff --target WIN_DLL_nanoCLR --updatearchive --archivepath <archive-directory>
 ```
@@ -82,7 +74,7 @@ or
 ```
 nuget list nanoFramework -verbosity detailed > <directory>\NuGetPackages.txt
 ```
-You'll notice that there is a warning at the top of *NuGetPackages.txt* that you should use *search* rather than *list*. Don't do that, the search command does not find all packages (at the time of writing).
+You'll notice that there is a warning at the top of *NuGetPackages.txt* that you should use the *search* option rather than *list*. Don't do that, the *search* option only finds a subset of all packages (at the time of writing).
 
 ## Update script
 
@@ -113,10 +105,10 @@ The information on devices that are relevant for a single project, for a solutio
 {
     "GlobalSettingsDirectoryPath": "<path to directory with base configuration>",
     "NuGetPackageList": "<(relative) path to NuGetPackageList.txt file>",
-    "PathToLocalNanoFF": "<localtools>/nanoff.exe",
-    "PathToLocalNanoCLR": "<localtools>/nanoclr.exe",
+    "NanoFFPath": "<localtools>/nanoff.exe",
+    "NanoCLRPath": "<localtools>/nanoclr.exe",
     "FirmwareArchivePath": "<firmware>",
-    "PathToLocalCLRDirectory": "<firmware>/WIN_DLL_nanoCLR-1.12.0.53",
+    "VirtualDeviceCLRPath": "<firmware>/WIN_DLL_nanoCLR-1.12.0.53",
     "VirtualDeviceSerialPort": "COM30",
     "ReservedSerialPorts": ["COM30", "COM31", "COM32", "COM33"],
     "DeviceTypeTargets": {
@@ -137,17 +129,17 @@ with:
 
 - `GlobalSettingsDirectoryPath` is the path to the directory containing another `nano.devices.json` file. That file is read first, then the content of this file is used to overwrite the settings from that file.
 - `NuGetPackageList` is the path to a [file](#nuget-package-list) that lists the allowed versions of the NuGet packages.
-- `PathToLocalNanoFF` is the path to the `nanoff.exe` file that is used to deploy firmware, applications and files to a device. If it is not present, the global tool is used.
-- `PathToLocalNanoCLR` is the path to the `nanoclr.exe` file that is used to run the Virtual nanoDevice. If it is not present, the global tool is used.
+- `NanoFFPath` is the path to the `nanoff.exe` file that is used to deploy firmware, applications and files to a device. If it is not present, the global tool is used.
+- `NanoCLRPath` is the path to the `nanoclr.exe` file that is used to run the Virtual nanoDevice. If it is not present, the global tool is used.
 - `FirmwareArchivePath` is the path to the firmware archive; this is the same path as used in the `--fwarchivepath` argument to *nanoff*.
-- `PathToLocalCLRDirectory` is the path to a directory that contains the Virtual nanoDevice runtime, a file named `nanoFramework.nanoCLR.dll`. If this setting is not present and the runtime is present in the firmware archive specified in *FirmwareArchivePath*, that firmware version is used. If neither is not present, the runtime embedded in `nanoclr.exe` is used.
+- `VirtualDeviceCLRPath` is the path to a directory that contains the Virtual nanoDevice runtime, a file named `nanoFramework.nanoCLR.dll`. If this setting is not present and the runtime is present in the firmware archive specified in *FirmwareArchivePath*, that firmware version is used. If neither is present, the runtime embedded in `nanoclr.exe` is used.
 - `VirtualDeviceSerialPort` is the serial port to use for a Virtual nanoDevice where applications can be deployed to by the Visual Studio extension. The default is "COM30".
-- `ReservedSerialPorts` is an array of serial ports reserved for use by, e.g., a Virtual nanoDevice. This setting is used by all .NET **nanoFramework** tools: these ports are excluded from the discovery of real hardware nanoDevices. The *VirtualDeviceSerialPort* is considered to be part of the *ReservedSerialPorts* even if it is not present in this setting.
-- `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name cannot be *Virtual nanoDevice*. The target can be a single name or an array.
+- `ReservedSerialPorts` is an array of serial ports reserved for use by, e.g., a Virtual nanoDevice. These ports are excluded from the discovery of real hardware nanoDevices. As the Virtual Device is not a real hardware nanoDevice, the *VirtualDeviceSerialPort* is considered to be part of the *ReservedSerialPorts* even if it is not present in the array.
+- `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name can be anything except *Virtual nanoDevice*. The target can be a single name or an array.
 - `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual nanoDevice, all other names must have been defined in *DeviceTypeTargets*.
 - `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all named devices in *DeviceTypeTargets* that match the specified platform.
 
-A path to a directory or file can be specified relative to the directory the `nano.devices.json` file resides in. It can also be an absolute path, and the path may contain environment variables. Instead of a `\` a '/' may be used. So `../.nanoFramework/Firmware`, `c:\ProgramData\nanoFramework\Firmware` and `%USERPROFILE%/.nanoFramework/Firmware` are all valid paths.
+A path to a directory or file can be specified relative to the directory the `nano.devices.json` file resides in. It can also be an absolute path, and the path may contain environment variables like `%USERPROFILE%`. Instead of a `\` a '/' may be used. So `../.nanoFramework/Firmware`, `c:\ProgramData\nanoFramework\Firmware` and `%USERPROFILE%/.nanoFramework/Firmware` are all valid paths.
 
 ### Settings used by nanoFramework tools
 
@@ -156,10 +148,10 @@ An overview of the settings that are used by the various .NET **nanoFramework** 
 | Setting | Used by |
 | ------- | ------- |
 | NuGetPackageList | [Consistency verification task](#consistency-verification-task)<sup>1</sup> |
-| PathToLocalNanoFF | Not used by .NET **nanoFramework** tools but may be used by custom (community) tools. |
-| PathToLocalNanoCLR | Consistency verification task, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
+| NanoFFPath | Not used by .NET **nanoFramework** tools but may be used by custom (community) tools. |
+| NanoCLRPath | Consistency verification task, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
 | FirmwareArchivePath | Consistency verification task<sup>1</sup>, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
-| PathToLocalCLRDirectory | Consistency verification task, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
+| VirtualDeviceCLRPath | Consistency verification task, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
 | VirtualDeviceSerialPort | Visual Studio extension<sup>2</sup> |
 | ReservedSerialPorts | Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
 | DeviceTypeTargets | Consistency verification task<sup>1</sup> |
@@ -174,16 +166,16 @@ An overview of the settings that are used by the various .NET **nanoFramework** 
 
 As illustrated by the diagram in the introduction, the information on devices can be distributed over multiple `nano.devices.json` files. This is done to simplify the administration of the configuration. If multiple .NET **nanoFramework** projects are involved, most of the settings will be identical for all projects. Adding a new device type would require changing all project configurations. Instead the list of device types can be placed in a global `nano.devices.json` file (in *DeviceTypeTargets*); if the project configurations include that global file (via the *GlobalSettingsDirectoryPath*), the new device type is immediately available to all projects.
 
-The configuration files are read:
+The configuration files are read in a particular order:
 
 - First the `nano.devices.json` is read in the project directory (or solution directory for the Visual Studio extension).
 - If the *GlobalSettingsDirectoryPath* is set, the `nano.devices.json` in that directory is processed first. Then the settings in the `nano.devices.json` being read overwrite the settings from the included configuration:
-    - If a top-level element (*PathToLocalNanoCLR*, *DeviceTypeTargets*, etc.) is present in both files, the one that is read first is overwritten by the setting read last.
+    - If a top-level element (*NanoCLRPath*, *DeviceTypeTargets*, etc.) is present in both files, the one that is read first is overwritten by the setting read last.
     - If *DeviceTypeTargets* is present in both files, the lists are merged. In case the same name is present in both lists, the value from the included file is overwritten. To remove a name from the list, set its value to an empty array.
-- This is done recursively: if the included file has a *GlobalSettingsDirectoryPath*, the configuration file in that directory is read before the included file.
+- This is done recursively: if the `nano.devices.json` in the *GlobalSettingsDirectoryPath* has a *GlobalSettingsDirectoryPath*, the configuration file in that directory is read first.
 - If the resulting configuration does not have a value for *ReservedSerialPorts* and the file `%USERPROFILE%\.nanoFramework\nano.devices.json` exists, that file is read and only the setting for *ReservedSerialPorts* is added to the configuration.
 
-A typical use of the configuration files is shown in the illustration at the top of the page.
+The figure at the top of the page illustrates the hierarchy of configuration files.
 
 If you adopt the daily update strategy, a typical use of `nano.devices.json` configurations is:
 
@@ -191,7 +183,7 @@ If you adopt the daily update strategy, a typical use of `nano.devices.json` con
     - *NuGetPackageList*.
     - *FirmwareArchivePath*.
     - *DeviceTypeTargets*: the device types you use in your projects.
-    - *ReservedSerialPorts*: all serial ports that never are used to connect a real hardware nanoDevice to.
+    - *ReservedSerialPorts*: all serial ports that never are used on this machine to connect a real hardware nanoDevice to, but that are used when other devices are connected to the machine.
 - In `nano.devices.json` in a project directory you specify:
     - *GlobalSettingsDirectoryPath* = `%USERPROFILE%/.nanoFramework`.
     - *DeviceTypes* and/or *Platforms*: the device types you use in the project
@@ -202,14 +194,14 @@ If you adopt the controlled update strategy, the configuration files are part of
     - *NuGetPackageList*. 
     - *FirmwareArchivePath*.
     - *DeviceTypeTargets*: the device types you use in your projects.
-    - *PathToLocalNanoFF*, *PathToLocalNanoCLR*, *PathToLocalCLRDirectory* and/or *VirtualDeviceSerialPort* if they are relevant to the projects in the repository.
+    - *NanoFFPath*, *VirtualDeviceCLRPath* and/or *VirtualDeviceSerialPort* if they are relevant to the projects in the repository.
 - In `nano.devices.json` in a solution directory you specify:
     - *GlobalSettingsDirectoryPath* = path to the repository-wide configuration directory.
 - In `nano.devices.json` in a project directory you specify:
     - *GlobalSettingsDirectoryPath* = path to the repository-wide configuration directory or to the solution directory.
     - *DeviceTypes* and/or *Platforms*: the device types you use in the project
 - In `%USERPROFILE%\.nanoFramework\nano.devices.json` you specify:
-    - *ReservedSerialPorts*: all serial ports that never are used on this machine to connect a real hardware nanoDevice to.
+    - *ReservedSerialPorts*: all serial ports that never are used on this machine to connect a real hardware nanoDevice to, but that are used when other devices are connected to the machine.
 
 ## Consistency verification task
 
