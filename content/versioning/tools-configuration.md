@@ -86,8 +86,8 @@ If you adopt the daily update strategy, create a script that updates the global 
 dotnet tool update -g nanoff
 dotnet tool update -g nanoclr
 
-nanoff --suppressnanoffversioncheck --updatearchive --target ESP32_S3_ALL --archivepath "%USERPROFILE%\.nanoFramework\Firmware"
-nanoff --suppressnanoffversioncheck --updatearchive --target ESP32_C6_THREAD --archivepath "%USERPROFILE%\.nanoFramework\Firmware"
+nanoff --suppressnanoffversioncheck --updatearchive --removeoldversions --target ESP32_S3_ALL --archivepath "%USERPROFILE%\.nanoFramework\Firmware"
+nanoff --suppressnanoffversioncheck --updatearchive --removeoldversions --target ESP32_C6_THREAD --archivepath "%USERPROFILE%\.nanoFramework\Firmware"
 rem... more targets ...
 
 "%USERPROFILE%\.nanoFramework\nuget.exe" list nanoFramework -verbosity detailed > "%USERPROFILE%\.nanoFramework\NuGetPackages.txt"
