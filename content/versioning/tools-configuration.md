@@ -109,8 +109,6 @@ The information on devices that are relevant for a single project, for a solutio
     "NanoCLRPath": "<localtools>/nanoclr.exe",
     "FirmwareArchivePath": "<firmware>",
     "VirtualDeviceCLRPath": "<firmware>/WIN_DLL_nanoCLR-1.12.0.53",
-    "VirtualDeviceSerialPort": "COM30",
-    "ReservedSerialPorts": ["COM30", "COM31", "COM32", "COM33"],
     "DeviceTypeTargets": {
         "Primary device": "ESP32_S3_ALL",
         "Alternative": "ESP32_S3_BLE",
@@ -122,7 +120,9 @@ The information on devices that are relevant for a single project, for a solutio
     ],
     "Platforms": [
         "ESP32"
-    ]
+    ],
+    "VirtualDeviceSerialPort": "COM30",
+    "ReservedSerialPorts": ["COM30", "COM31", "COM32", "COM33"]
 }
 ```
 with:
@@ -133,11 +133,11 @@ with:
 - `NanoCLRPath` is the path to the `nanoclr.exe` file that is used to run the Virtual nanoDevice. If it is not present, the global tool is used.
 - `FirmwareArchivePath` is the path to the firmware archive; this is the same path as used in the `--fwarchivepath` argument to *nanoff*.
 - `VirtualDeviceCLRPath` is the path to a directory that contains the Virtual nanoDevice runtime, a file named `nanoFramework.nanoCLR.dll`. If this setting is not present and the runtime is present in the firmware archive specified in *FirmwareArchivePath*, that firmware version is used. If neither is present, the runtime embedded in `nanoclr.exe` is used.
-- `VirtualDeviceSerialPort` is the serial port to use for a Virtual nanoDevice where applications can be deployed to by the Visual Studio extension. The default is "COM30".
-- `ReservedSerialPorts` is an array of serial ports reserved for use by, e.g., a Virtual nanoDevice. These ports are excluded from the discovery of real hardware nanoDevices. As the Virtual Device is not a real hardware nanoDevice, the *VirtualDeviceSerialPort* is considered to be part of the *ReservedSerialPorts* even if it is not present in the array.
 - `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name can be anything except *Virtual nanoDevice*. The target can be a single name or an array.
 - `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual nanoDevice, all other names must have been defined in *DeviceTypeTargets*.
 - `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all named devices in *DeviceTypeTargets* that match the specified platform.
+- `VirtualDeviceSerialPort` is the serial port to use for a Virtual nanoDevice where applications can be deployed to by the Visual Studio extension. The default is "COM30".
+- `ReservedSerialPorts` is an array of serial ports reserved for use by, e.g., a Virtual nanoDevice. These ports are excluded from the discovery of real hardware nanoDevices. As the Virtual Device is not a real hardware nanoDevice, the *VirtualDeviceSerialPort* is considered to be part of the *ReservedSerialPorts* even if it is not present in the array.
 
 A path to a directory or file can be specified relative to the directory the `nano.devices.json` file resides in. It can also be an absolute path, and the path may contain environment variables like `%USERPROFILE%`. Instead of a `\` a '/' may be used. So `../.nanoFramework/Firmware`, `c:\ProgramData\nanoFramework\Firmware` and `%USERPROFILE%/.nanoFramework/Firmware` are all valid paths.
 
@@ -152,11 +152,11 @@ An overview of the settings that are used by the various .NET **nanoFramework** 
 | NanoCLRPath | Consistency verification task, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
 | FirmwareArchivePath | Consistency verification task<sup>1</sup>, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
 | VirtualDeviceCLRPath | Consistency verification task, Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
-| VirtualDeviceSerialPort | Visual Studio extension<sup>2</sup> |
-| ReservedSerialPorts | Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
 | DeviceTypeTargets | Consistency verification task<sup>1</sup> |
 | DeviceTypes | Consistency verification task<sup>1</sup> |
 | Platforms | Consistency verification task |
+| VirtualDeviceSerialPort | Visual Studio extension<sup>2</sup> |
+| ReservedSerialPorts | Visual Studio extension<sup>2</sup>, test framework<sup>3</sup> |
 
 <sup>1</sup> This setting is required.
 <sup>2</sup> Taken from the `nano.devices.json` that is located in the directory of the solution that has been opened in Visual Studio. The `nano.devices.json` in project directories are ignored.
