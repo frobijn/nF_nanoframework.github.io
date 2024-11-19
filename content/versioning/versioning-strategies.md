@@ -45,6 +45,8 @@ Updates of the NuGet packages are available via the package manager in Visual St
 
 If you deploy your application (via F5 in Visual Studio) to a device, a version check is done to verify that the NuGet packages used by the application are consistent with the firmware installed on the device. If there is a mismatch, an error message tells you whether the NuGet package or the firmware is more recent. Just update the NuGet package or the firmware to the latest version, and you're good to go.
 
+![Error message for F5 deployment](../../images/versioning-output-f5-deployment.png)
+
 At the moment of writing, the version check is not executed if you deploy an application via *nanoff* to a device. If you want to deploy an application with *nanoff* to a new device, always include an update of the firmware as well. Make sure you have tested before (via F5 in Visual Studio) whether the latest firmware and your applications are consistent.
 
 ## Controlled update
@@ -54,6 +56,8 @@ Especially in commercial projects the auto-update strategy may not be feasible. 
 Instead of using the latest version, you are using a version that is frozen in time. At the start of a project, you make a local copy of the firmware packages for your devices and of the *nanoff* tool and Virtual Device runtime. These are stored in a project-specific location. You only use the NuGet packages that are current at that time, or at least NuGet packages that match the frozen firmware. If you deploy firmware to a (new) device, you'll use the local copy of *nanoff* and of the firmware. In unit testing and debugging you use the local copy of the Virtual Device runtime.
 
 While you are developing, it may become necessary to use additional NuGet packages. Or you may encounter an issue with one of the NuGet packages that can be resolved by a bug fix of the class library only. (The community welcomes any PR with a resolution of an issue!) If your project allows to start using new (versions of) NuGet packages, you want to be sure from the start that the packages are consistent with the frozen version of the firmware. Add some [extra files](tools-configuration.md) to each project, and when the project is built the consistency of NuGet packages and the selected firmware versions is verified.
+
+![Error message from MSBuild task](../../images/versioning-output-msbuild-task.png)
 
 If you are ready to update to a new version, freeze the then-current version of the NuGet and firmware packages and tools. Rebuilt your projects and update NuGet packages if necessary. Deploy the new firmware to test devices, and optionally re-run your test projects. If all tests succeed, keep the version and proceed to develop/test with that version.
 
