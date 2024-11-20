@@ -133,7 +133,7 @@ with:
 - `NanoFFPath` is the path to the `nanoff.exe` file that is used to deploy firmware, applications and files to a device. If it is not present, the global tool is used.
 - `NanoCLRPath` is the path to the `nanoclr.exe` file that is used to run the Virtual nanoDevice. If it is not present, the global tool is used.
 - `FirmwareArchivePath` is the path to the firmware archive; this is the same path as used in the `--fwarchivepath` argument to *nanoff*.
-- `VirtualDeviceCLRPath` is the path to a directory that contains the Virtual nanoDevice runtime, a file named `nanoFramework.nanoCLR.dll`. If this setting is not present and the runtime is present in the firmware archive specified in *FirmwareArchivePath*, that firmware version is used. If neither is present, the runtime embedded in `nanoclr.exe` is used.
+- `VirtualDeviceCLRPath` is the path to a directory that contains the Virtual nanoDevice runtime, a file named `nanoFramework.nanoCLR.dll`. If *VirtualDeviceCLRPath* is not specified and the runtime is present in the firmware archive specified in *FirmwareArchivePath*, that runtime version is used rather than the runtime embedded in `nanoclr.exe`.
 - `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name can be anything except *Virtual nanoDevice*. The target can be a single name or an array.
 - `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual nanoDevice, all other names must have been defined in *DeviceTypeTargets*.
 - `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all named devices in *DeviceTypeTargets* that match the specified platform.
