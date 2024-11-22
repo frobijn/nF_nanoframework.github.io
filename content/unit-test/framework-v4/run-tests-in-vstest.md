@@ -3,7 +3,7 @@
 The tests in a test assembly can also be run using command line tools or as part of a CI/CD pipeline. The test platform is controlled from one of the VSTest-family of applications, e.g.:
 
 - [vstest.console.exe](https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022)
-- [VSTest@2](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/vstest-v2?view=azure-pipelines) or [VSTest@3](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/vstest-v3?view=azure-pipelines) task in Azure DevOps
+- [VSTest@2](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/vstest-v3?view=azure-pipelines) or [VSTest@3](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/vstest-v4?view=azure-pipelines) task in Azure DevOps
 
 The details are slightly different for each application. But there are a few things that you have to do to enable the use of the test platform: 
 

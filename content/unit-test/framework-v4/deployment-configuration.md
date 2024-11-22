@@ -35,7 +35,7 @@ The .NET **nanoFramework** has no mechanism to retrieve deployment configuration
 
         <DeploymentConfiguration>
             <SerialPort>COM9</SerialPort>
-            <File>MyBoard_v3.json</File>
+            <File>MyBoard_v4.json</File>
         </DeploymentConfiguration>
 
         <DeploymentConfiguration>
@@ -63,7 +63,7 @@ To specify the deployment information to use in a [unit tests debug project](deb
 {
   "$schema": "obj/nF/SelectUnitTests.schema.json"
 
-  "DeploymentConfiguration": "MyBoard_v3.json"
+  "DeploymentConfiguration": "MyBoard_v4.json"
 
   ... test cases ...
 }

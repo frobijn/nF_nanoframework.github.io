@@ -6,7 +6,7 @@ debugging-unit-tests
 controlling-the-test-execution
 deployment-configuration
 extending-the-framework
-migrate-from-v2
+migrate-from-v3
 run-tests-in-vstest
 use-custom-tooling
 constraints-limitations
