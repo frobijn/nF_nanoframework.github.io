@@ -119,9 +119,6 @@ namespace nanoFramework.TestFramework.MyExtensions
         public string Description
             => "DevBoard"
 
-        public string[] RequiredDeploymentConfigurationKeys
-            => new string[0];
-
         public bool ShouldTestOnDevice(ITestDevice testDevice)
         {
             byte[] configData = testDevice.GetDeploymentConfigurationFile ("DevBoard configuration");
