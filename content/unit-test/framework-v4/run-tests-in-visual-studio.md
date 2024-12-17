@@ -10,10 +10,10 @@ There are other ways to organize the tests; see the *Group By* button in the Tes
 
 Tests that should be run both on the virtual device and on real hardware are shown twice in the Test Explorer, once for each type of device. This allows you to control the type of device a test should be executed on, by selecting the corresponding test. Unfortunately the Test Explorer has no mechanism to show only the tests that can be run on the available real hardware that actually is connected to your computer, or to automatically hide test that should be run on real hardware if no devices are available. However, you can hide tests for a device type via the filter at the top right corner of the Test Explorer:
 
-- `Trait:"@Virtual nanoDevice"` shows only tests that should be executed on the Virtual Device and hides test for real hardware and for regular .NET target frameworks;
-- `-Trait:"@Virtual Device"` hides tests that should be executed on the Virtual Device;
-- `Trait:"@Hardware nanoDevice"` shows only tests that should be executed on real hardware and hides test for the virtual device and for regular .NET target frameworks;
-- `-Trait:"@Hardware nanoDevice"` hides tests that should be executed on real hardware;
+- `TestCategory:"@Virtual nanoDevice"` shows only tests that should be executed on the Virtual Device and hides test for real hardware and for regular .NET target frameworks;
+- `-TestCategory:"@Virtual Device"` hides tests that should be executed on the Virtual Device;
+- `TestCategory:"@Hardware nanoDevice"` shows only tests that should be executed on real hardware and hides test for the virtual device and for regular .NET target frameworks;
+- `-TestCategory:"@Hardware nanoDevice"` hides tests that should be executed on real hardware;
 
 The Test Explorer has a memory for recent filters, and has a button to remove the filter.
 
@@ -23,16 +23,16 @@ If you are using traits to organize and select the tests: you can add custom tra
 ```csharp
 namespace nanoFramework.TestFramework.Test
 {
-    [Trait("Trait for all tests in the test project")]
-    public class AssemblyAttributes : IAssemblyAttributes
+    [TestCategory("TestCategory for all tests in the test project")]
+    public class AssemblyAttributes : ITestAttributes
     {
     }
 
     [TestClass]
-    [Trait("Trait for all tests in the test class")]
+    [TestCategory("TestCategory for all tests in the test class")]
     public class TestOfTest
     {
-        [Trait("Trait for this test method")]
+        [TestCategory("TestCategory for this test method")]
         public void Test()
         {
             // This method should be executed on the virtual device

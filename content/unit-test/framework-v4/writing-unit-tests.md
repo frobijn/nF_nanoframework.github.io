@@ -1,4 +1,4 @@
-# Writing unit tests
+﻿# Writing unit tests
 
 The basic premise of writing unit tests is that the author of the test knows exactly what the test is for, how it should be run and on what devices it makes sense to execute the test. That is communicated to the test platform tooling via attributes. This section describes the standard attributes and their effect.
 
@@ -83,8 +83,8 @@ namespace nanoFramework.TestFramework.Test
 
 - It is technically possible to have both a constructor/`IDisposable` pair and setup/cleanup methods. However, it is recommended that you choose either the constructor/`IDisposable` method or create setup/cleanup methods. Setup/cleanup methods are required if access to the [deployment configuration](deployment-configuration) is required for the initialization of the test context.
 
-- `[Setup]`: this attribute is used on any method. This method will be called first. While you technically have as many of those functions per class, it is recommended to only use 1 per class. Typical usage is to setup hardware you'll need to have running for all the tests methods.
-- `[Cleanup]`: this attribute is used on any method. This method will be called last, after the all the tests methods. While you technically have as many of those functions per class, it is recommended to only use 1 per class.
+- `[Setup]`: this attribute is used on any method. This method will be called first. While you technically can have as many of those functions per class, it is recommended to only use 1 per class. Typical usage is to setup hardware you'll need to have running for all the tests methods.
+- `[Cleanup]`: this attribute is used on any method. This method will be called last, after the all the tests methods. While you technically can have as many of those functions per class, it is recommended to only use 1 per class.
 
 **Important**: if the initialization of the test context fails, none of the test methods for which the initialization is performed will be executed. For this reason it is recommended that a setup/cleanup or constructor/`IDisposable` is used to initialize, e.g., a device or other hardware required by the tests, or to verify whether the device that runs the test has the required features. If the constructor/setup methods succeed, all tests fill be executed and, regardless of the outcome of the tests, the cleanup/Dispose methods will be called.
 
@@ -264,23 +264,46 @@ namespace nanoFramework.TestFramework.Test
 }
 ```
 
-It is not uncommon that all tests in a test assembly are designed to run on the same type of devices. The attributes may also be applied to the assembly as a whole. For technical reasons it is not possible to use the attributes as assembly attributes. Instead the author of the test assembly should add a public class that implements the `IAssemblyAttributes` interface and apply the attributes to that class:
+It is not uncommon that all tests in a test assembly are designed to run on the same type of devices. The attributes may also be applied to the assembly as a whole. For technical reasons it is not possible to use the attributes as assembly attributes. Instead the author of the test assembly should add a public class that implements the `ITestAssembly` interface and apply the attributes to that class:
 
 ```csharp
 namespace nanoFramework.TestFramework.Test
 {
     [TestOnVirtualDevice] // All tests in the assembly are run on the virtual device
-    public class AssemblyAttributes : IAssemblyAttributes
+    public class AssemblyAttributes : ITestAssembly
     {
     }
 }
 ```
 
-You can add as many classes that implement `IAssemblyAttributes` as you like.
+Sometimes the same setup has to be done for all tests in a test assembly. E.g., if all tests require an internet connection, the device should be connected to a WiFi access point before any of the tests can be run. To achive that, add setup and cleanup methods to a public class that implements the `ITestAssembly`:
+
+```csharp
+namespace nanoFramework.TestFramework.Test
+{
+    public class AssemblyInitialization : ITestAssembly
+    {
+        [Setup]
+        public void ConnectToAP ()
+        {
+            // ...
+        }
+
+        [Cleanup]
+        public void DisconnectFromAP ()
+        {
+            // ...
+        }
+    }
+}
+```
+As with a test class, the class can technically have as many setup / cleanup methods as you like, but it is recommended that there's only one per class.
+
+You can add as many classes that implement `ITestAssembly` as you like.
 
 ## Other attributes
 
-- Test can be categorized by using the `[Trait]` attribute. This is discussed in [Run tests in Visual Studio](run-tests-in-visual-studio#custom-traits). The `[Trait]` attribute can be used with a test method, test class or test assembly.
+- Test can be categorized by using the `[TestCategory]` attribute. This is discussed in [Run tests in Visual Studio](run-tests-in-visual-studio#custom-traits). The `[TestCategory]` attribute can be used with a test method, test class or test assembly.
 
 - A setup or test method can receive selected deployment configuration data via the `[DeploymentConfiguration]` attribute; see [Use a deployment configuration](deployment-configuration).
 

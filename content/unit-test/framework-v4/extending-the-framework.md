@@ -1,4 +1,4 @@
-# Extending the framework
+﻿# Extending the framework
 
 ## It's the interfaces, not the attributes
 
@@ -12,11 +12,11 @@ The **nanoFramework** test platform loads a unit test assembly (after a build) t
 | `ICleanup` | The method is a cleanup method |
 | `IDeploymentConfiguration` | The attribute provides the deployment configuration keys for the method's arguments |
 | `IDataRow` | The attribute provides data for a test method's arguments |
-| `ITraits` | The attribute specifies one or more traits for a test method, test class or test assembly |
+| `ITestCategories` | The attribute specifies one or more traits for a test method, test class or test assembly |
 | `ITestOnRealHardware` | The test method (or all test in the test class or test assembly) should be run on real hardware. The implementation of the interface checks whether a device satisfies the criteria. |
 | `ITestOnVirtualDevice` | The test method (or all test in the test class or test assembly) should be run on a virtual device. |
 
-For technical reasons assembly attributes cannot be applied to an assembly but instead should be applied to one or more classes that implements `IAssemblyAttributes`. The classes are also found by looking for the interface.
+For technical reasons assembly attributes cannot be applied to an assembly but instead should be applied to one or more classes that implements `ITestAssembly`. The classes are also found by looking for the interface.
 
 If you do not like the attributes that come out of the box, you can define your own. An attribute can implement multiple interfaces. E.g.,:
 
@@ -24,34 +24,32 @@ If you do not like the attributes that come out of the box, you can define your 
 namespace nanoFramework.TestFramework.MyExtensions
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class OutOfOrderAttribute : Attribute, ITestMethod, ITraits
+    public class OutOfOrderAttribute : Attribute, ITestMethod, ITestCategories
     {
         #region ITestMethod implementation
         public bool CanBeRun
             => false;
         #endregion
 
-        #region ITraits implementation
-        public string[] Traits
+        #region ITestCategories implementation
+        public string[] TestCategorys
             => new string[] { "Out of order" };
         #endregion
     }
 
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class TestOnDevBoardAttribute : Attribute, IDeploymentConfiguration, ITestOnRealHardware
+    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+    public class TestOnDevBoardAttribute : Attribute, ITestOnRealHardware
     {
-        #region IDeploymentConfiguration implementation
-        public string[] ConfigurationKeys
-            => "DevBoard configuration";
-        #endregion
-
         #region ITestOnRealHardware implementation
         public string Description
             => "DevBoard"
 
+        public string[] RequiredConfigurationKeys
+            => "DevBoard configuration";
+
         public bool ShouldTestOnDevice(ITestDevice testDevice)
         {
-            byte[] configData = testDevice.GetDeploymentConfigurationFile (ConfigurationKeys);
+            byte[] configData = testDevice.GetDeploymentConfigurationFile (RequiredConfigurationKeys[0]);
             if (configData is null)
             {
                 return false;
@@ -137,8 +135,8 @@ namespace nanoFramework.TestFramework.MyExtensions.Test
                              select t).First ();
             var allAttributes = AttributeProxy.GetMethodAttributeProxies (testClass.GetMethod ("OutOfOrderTestMethod"), new TestFrameworkImplementation (), null);
 
-            var actualITraits = allAttributes.OfType (typeof (TraitsProxy)).First ();
-            Assert.AreEqual ("Out of order", actualITraits.Traits[0]);
+            var actualITestCategories = allAttributes.OfType (typeof (TestCategorysProxy)).First ();
+            Assert.AreEqual ("Out of order", actualITestCategories.TestCategorys[0]);
 
             var actualITestMethod = allAttributes.OfType (typeof (TestMethodProxy)).First ();
             Assert.AreEqual (false, actualITestMethod.CanBeRun);
@@ -162,8 +160,7 @@ namespace nanoFramework.TestFramework.MyExtensions
     public class MonitorTestsUsingRGBLED : IUnitTestMonitor
     {
         [Setup]
-        [DeploymentConfiguration("RGB LED I/O port")]
-        public void Setup(string ioPort)
+        public void Setup([DeploymentConfiguration("RGB LED I/O port")] string ioPort)
         {
         }
 

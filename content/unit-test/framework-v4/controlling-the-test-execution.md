@@ -1,4 +1,4 @@
-# Controlling the test execution
+﻿# Controlling the test execution
 
 The author of a unit test has indicated via [attributes](writing-unit-tests#where-to-run-a-test-method-device-selection) on what devices the test should be run. The test platform tries to run the tests on [as many devices it has access to](run-tests-in-visual-studio#running-the-unit-tests). Which of the (physically) available devices the test platform has access to is controlled using configuration files.
 

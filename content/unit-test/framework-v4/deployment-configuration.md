@@ -1,4 +1,4 @@
-# Deployment configuration
+﻿# Deployment configuration
 
 Especially in more generic hardware-specific tests extra information is required about the "make and model" of the device. It is not enough to know the platform or installed firmware. The [TestOn... attributes](writing-unit-tests#where-to-run-a-test-method-device-selection) may need to know whether the additional hardware (e.g., a sensor) is connected to a device in order to decide whether a test can be run on that device. When the test is executed, it needs to now which I/O ports the hardware is connected to.
 
@@ -71,7 +71,7 @@ To specify the deployment information to use in a [unit tests debug project](deb
 
 ## Using deployment configuration information
 
-The deployment configuration can be passed to [setup and test methods](writing-unit-tests) using the `[DeploymentConfiguration]` attribute:
+The deployment configuration can be passed to [setup and test methods](writing-unit-tests) using the `[DeploymentConfiguration]` attribute applied to the parameter that should receive the configuration value:
 
 ```csharp
 namespace nanoFramework.TestFramework.Test
@@ -80,28 +80,33 @@ namespace nanoFramework.TestFramework.Test
     public class TestOfTest
     {
         [Setup]
-        [DeploymentConfiguration ("DevBoard configuration", "SSID name")]
-        public void TestHardware(byte[] configuration, string ssidName)
+        public void TestHardware(
+            [DeploymentConfiguration ("DevBoard configuration")] byte[] configuration,
+            [DeploymentConfiguration ("SSID name")] string ssidName)
         {
         }
 
         [TestMethod]
-        [DeploymentConfiguration ("RGB LED I/O port")]
-        public void TestRGBLED (int ioPort)
+        public void TestRGBLED ([DeploymentConfiguration ("RGB LED I/O port")] int ioPort)
         {
         }
 
         [DataRow(3, 1)]
         [DataRow(4, 1)]
         [DataRow(5, 9)]
-        [DeploymentConfiguration ("Test image", "Device ID")]
-        public void TestRGBLED (byte[] image, long deviceId, int datarow_1, int datarow_2)
+        public void TestRGBLED (
+            DeploymentConfiguration ("Test image")] byte[] image,
+            int datarow_1,
+            int datarow_2,
+            DeploymentConfiguration ("Device ID")] long deviceId)
         {
         }
     }
 }
 ```
-The `[DeploymentConfiguration]` attribute lists the keys in the deployment configuration. The method should have corresponding arguments of type `string` to receive textual values, `int` or `long` for integer values or `byte[]` for binary data. If data is not available, the argument is `null` or -1 for integer values; this is reported in the result of the unit test.
+The `[DeploymentConfiguration]` attribute accepts the key in the deployment configuration. The parameter should have a type of `string` to receive textual values, `int` or `long` for integer values or `byte[]` for binary data. If data is not available, the argument is `null` or -1 for integer values; this is reported in the result of the unit test.
+
+## Executing tests depending on deployment configuration information
 
 The deployment configuration can be used to decide whether a test can be executed on a (real hardware) device. The test platform does not provide any attributes out of the box for this purpose, but you can easily provide one yourself. Your attribute can be used instead of the `[TestOn...]` [attributes](writing-unit-tests#where-to-run-a-test-method-device-selection) for real hardware:
 
@@ -113,6 +118,9 @@ namespace nanoFramework.TestFramework.MyExtensions
     {
         public string Description
             => "DevBoard"
+
+        public string[] RequiredConfigurationKeys
+            => new string[0];
 
         public bool ShouldTestOnDevice(ITestDevice testDevice)
         {
@@ -141,8 +149,7 @@ namespace nanoFramework.TestFramework.Test
         }
 
         [Setup]
-        [DeploymentConfiguration ("DevBoard configuration")]
-        public void TestHardware(byte[] configuration)
+        public void TestHardware([DeploymentConfiguration ("DevBoard configuration")] byte[] configuration)
         {
         }
     }
@@ -162,8 +169,7 @@ namespace nanoFramework.TestFramework.Test
         }
 
         [Setup]
-        [DeploymentConfiguration ("DevBoard configuration")]
-        public void TestHardware(byte[] configuration)
+        public void TestHardware([DeploymentConfiguration ("DevBoard configuration")] byte[] configuration)
         {
             if (/* cannot run for this configuration */)
             {
