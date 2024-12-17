@@ -119,7 +119,7 @@ namespace nanoFramework.TestFramework.MyExtensions
         public string Description
             => "DevBoard"
 
-        public string[] RequiredConfigurationKeys
+        public string[] RequiredDeploymentConfigurationKeys
             => new string[0];
 
         public bool ShouldTestOnDevice(ITestDevice testDevice)
