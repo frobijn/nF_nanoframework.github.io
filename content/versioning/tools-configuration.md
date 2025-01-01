@@ -147,6 +147,15 @@ A path to a directory or file can be specified relative to the directory the `na
 
 All settings are optional, except for the values used in *DeviceTypes* that should be defined in *DeviceTypeTargets* in the same file or in an imported file.
 
+Four settings determine whether the project is designed to be deployed to a device:
+
+- If neither *DeviceTypes*, *Platforms* is specified, the configuration does not provide any information about the devices the project is designed to be deployed to.
+- If any of *DeviceTypes* or *Platforms* is specified, even as an empty array, the project is designed to be deployed to devices that satisfy any of the criteria:
+    - The firmware/target of the device matches the names specified by *DeviceTypes* combined with *DeviceTypeTargets*.
+    - The platform of the device matches the names specified in *Platforms*.
+    - The system serial number or module serial number matches any of the numbers specified for one of the *Devices*.
+- If *FirmwareArchivePath* is specified, an additional criterion is that the firmware for the device must be present in the firmware archive.
+
 ### Settings used by nanoFramework tools
 
 An overview of the settings that are used by the various .NET **nanoFramework** tools.
