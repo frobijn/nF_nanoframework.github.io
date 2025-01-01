@@ -182,7 +182,7 @@ The configuration files are read in a particular order:
     - If *DeviceTypeTargets* is present in both files, the lists are merged. In case the same name is present in both lists, the value from the imported file is overwritten. To remove a name from the list, set its value to an empty array.
     - If *Devices* is present in both files, the lists are merged. In case the same device is present in both lists, the value from the imported file is overwritten. If the imported file specified a name and the file being read only specifies the firmware, only the firmware is overwritten. To remove a device from the list, set its value to an empty string.
 - This is done recursively: if the imported file has a *Import*, the configuration file in that directory is read first.
-- If the resulting configuration does not have a value for *Devices* and/or *ReservedSerialPorts* and the file `%USERPROFILE%\.nanoFramework\nano.devices.json` exists, that file is read and only the setting for *Devices* and/or *ReservedSerialPorts* is added to the configuration.
+- If the file `%USERPROFILE%\.nanoFramework\nano.devices.json` exists, that file is read. The *Devices* and *ReservedSerialPorts* are added to the configuration.
 
 The figure at the top of the page illustrates the hierarchy of configuration files.
 
@@ -196,7 +196,7 @@ If you adopt the daily update strategy, a typical use of `nano.devices.json` con
     - *ReservedSerialPorts*: all serial ports that never are used on this machine to connect a real hardware nanoDevice to, but that are used when other devices are connected to the machine.
 - In `nano.devices.json` in a project directory you specify:
     - *Import* = `%USERPROFILE%/.nanoFramework`.
-    - *DeviceTypes* and/or *Platforms*: the device types you use in the project
+    - *DeviceTypes* and/or *Platforms*: the device types you use in the project.
 
 If you adopt the controlled update strategy, the configuration files are part of the (git) repository. A typical use of `nano.devices.json` configurations is:
 
@@ -209,7 +209,7 @@ If you adopt the controlled update strategy, the configuration files are part of
     - *Import* = path to the repository-wide `nano.devices.json` file.
 - In `nano.devices.json` in a project directory you specify:
     - *Import* = path to the repository-wide `nano.devices.json` file or to the `nano.devices.json` file in the solution directory.
-    - *DeviceTypes* and/or *Platforms*: the device types you use in the project
+    - *DeviceTypes* and/or *Platforms*: the device types you use in the project.
 - In `%USERPROFILE%\.nanoFramework\nano.devices.json` you specify:
     - *Devices*: the devices available for debugging and testing.
     - *ReservedSerialPorts*: all serial ports that never are used on this machine to connect a real hardware nanoDevice to, but that are used when other devices are connected to the machine.
