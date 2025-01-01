@@ -140,8 +140,7 @@ with:
 - `DeviceTypeTargets` is a list of named device types, and per name the name of the runtime/target to use. The name can be anything except *Virtual nanoDevice*. The target can be a single name or an array.
 - `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual nanoDevice, all other names must have been defined in *DeviceTypeTargets*.
 - `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all devices that match the specified platform. If *FirmwareArchivePath* is specified, the list is limited to all devices for which firmware is present in the archive.
-- `Devices` is a list of specific devices identified by their system serial number or module serial number. The value is either  the firmware that is (or should be used) for the device,
-or a combination of the firmware name and a device name that can be used in user interfaces and in logging.
+- `Devices` is a list of specific devices that can be used to deploy the project to. A device is identified by its system serial number or module serial number. The value is either the firmware that is (or should be used) for the device, or a combination of the firmware name and a device name that can be used in user interfaces and in logging.
 - `ReservedSerialPorts` are used to limit the serial ports used in the discovery of real hardware nanoDevices. In the discovery process .NET nanoFramework software tries to communicate via the serial port, and some devices do not appreciate that. If you only have a few of these devices, you can add their serial port to the `ReservedSerialPorts` array as these are excluded from the discovery of real hardware nanoDevices.
 
 A path to a directory or file can be specified relative to the directory the `nano.devices.json` file resides in. It can also be an absolute path, and the path may contain environment variables like `%USERPROFILE%`. Instead of a `\` a '/' may be used. So `../.nanoFramework/Firmware`, `c:\ProgramData\nanoFramework\Firmware` and `%USERPROFILE%/.nanoFramework/Firmware` are all valid paths.
@@ -161,7 +160,7 @@ An overview of the settings that are used by the various .NET **nanoFramework** 
 | DeviceTypeTargets | Consistency verification task<sup>2</sup> |
 | DeviceTypes | Consistency verification task<sup>2</sup> |
 | Platforms | Consistency verification task |
-| Devices | Consistency verification task<sup>2</sup>, Visual Studio extension<sup>3</sup>, test framework<sup>4</sup>, custom (community) tools<sup>5</sup> |
+| Devices | Consistency verification task<sup>6</sup>, Visual Studio extension<sup>3</sup>, custom (community) tools<sup>5</sup> |
 | ReservedSerialPorts | Visual Studio extension<sup>3</sup>, test framework<sup>4</sup> |
 
 <sup>1</sup> This setting is required.
@@ -169,6 +168,7 @@ An overview of the settings that are used by the various .NET **nanoFramework** 
 <sup>3</sup> Taken from the `nano.devices.json` that is located in the directory of the active startup project, in case that is a .NET **nanoFramework** project. Otherwise the `nano.devices.json` us used from the directory of the solution that has been opened in Visual Studio.
 <sup>4</sup> Applies to the [latest version](../unit-test/framework-v4) of the test framework.
 <sup>5</sup> Also used in development tools that are available as [samples](TODO) for the .NET **nanoFramework** library that implements most of the versioning support functionality.
+<sup>6</sup> Used only if both *Platforms* and *DeviceTypes* are not specified.
 
 ### Hierarchy of configuration files
 
