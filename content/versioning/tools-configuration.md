@@ -190,7 +190,7 @@ The configuration files are read in a particular order:
 - If the *Import* is set, the imported files are processed first. Then the settings in the `nano.devices.json` being read overwrite the settings from the imported configuration:
     - If a top-level element (*NanoCLRPath*, *DeviceTypeTargets*, etc.) is present in both files, the one that is read first is overwritten by the setting read last.
     - If *DeviceTypeTargets* is present in both files, the lists are merged. In case the same name is present in both lists, the value from the imported file is overwritten. To remove a name from the list, set its value to `null`.
-    - If *Devices* is present in both files, the lists are merged. In case the same device is present in both lists, the value from the imported file is overwritten. If the imported file specified a name and the file being read only specifies the firmware, only the firmware is overwritten. To remove a device from the list, set its value to `null`.
+    - If *Devices* is present in both files, the lists are merged. In case the same device is present in both lists, the value from the imported file is overwritten by the name and firmware if those are provided. To remove a device from the list, set its value to `null`.
 - This is done recursively: if the imported file has a *Import*, the configuration file in that directory is read first.
 - If the file `%USERPROFILE%\.nanoFramework\nano.devices.json` exists, that file is read. The *Devices* and *ReservedSerialPorts* are added to the configuration.
 
