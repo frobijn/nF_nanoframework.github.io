@@ -154,13 +154,10 @@ All settings are optional, except for the values used in *DeviceTypes* that shou
 Four settings determine whether the project is designed to be deployed to a device:
 
 - If neither *DeviceTypes*, *Platforms* nor *DeviceSelection* is specified, the configuration does not provide any information about the devices the project is designed to be deployed to.
-- If any of *DeviceTypes* or *Platforms* is specified, resulting in at least one selected platform or one firmware/target (*DeviceTypes* combined with *DeviceTypeTargets*), the project is designed to be deployed to devices that satisfy any of the criteria:
+- If *DeviceTypes*, *Platforms* or *DeviceSelection* is specified, the project is designed to be deployed to devices that satisfy any of the criteria:
     - The firmware/target of the device matches the names specified by *DeviceTypes* combined with *DeviceTypeTargets*.
     - The platform of the device matches the names specified in *Platforms*.
-    - The system serial number or module serial number matches any of the numbers specified for one of the *DeviceSelection* (if specified).
-- If *DeviceTypes* is specified without resulting targets (combined with *DeviceTypeTargets*) or *Platforms* is specified as an empty array, the project is designed to be deployed to devices that satisfy the criterion:
-    - The system serial number or module serial number matches any of the numbers specified for one of the *DeviceSelection* (if specified)
-    - The system serial number or module serial number matches any of the numbers specified for one of the *Devices* if no *DeviceSelection* has been specified.
+    - The system serial number or module serial number matches any of the numbers specified for one of the *DeviceSelection* (if specified), regardless of the target specified for the device.
 - If *FirmwareArchivePath* is specified, an additional criterion is that the firmware for the device must be present in the firmware archive.
 
 ### Settings used by nanoFramework tools
