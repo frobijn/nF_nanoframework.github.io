@@ -126,7 +126,10 @@ The information on devices that are relevant for a single project, for a solutio
             "Name": "Prototype #3",
             "Target": "ESP32_C6_THREAD"
         }
-    ]
+    ],
+    "DeviceSelection": [
+        "100000000068B6B33CDA80"
+    ],
     "ReservedSerialPorts": ["COM5", "COM30", "COM31", "COM32", "COM33"]
 }
 ```
@@ -140,7 +143,8 @@ with:
 - `DeviceTypeTargets` is a list of named device types, and per name a list with the name of the firmware/target to use. The name can be anything except *Virtual nanoDevice*.
 - `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual nanoDevice, all other names must have been defined in *DeviceTypeTargets*.
 - `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all devices that match the specified platform. If *FirmwareArchivePath* is specified, the list is limited to all devices for which firmware is present in the archive.
-- `Devices` is a list of specific devices that can be used to deploy the project to. A device is identified by its system serial number or module serial number. The value is either the firmware that is (or should be used) for the device, or a combination of the firmware name and a device name that can be used in user interfaces and in logging.
+- `Devices` is a list of specific devices that are available to deploy the project to. A device is identified by its system serial number or module serial number. The value is either the firmware that is (or should be used) for the device, or a combination of the firmware name and a device name that can be used in user interfaces and in logging.
+- `DeviceSelection` is a list of devices (as mentioned in *Devices*) the project is designed to be deployed to. 
 - `ReservedSerialPorts` are used to limit the serial ports used in the discovery of real hardware nanoDevices. In the discovery process .NET nanoFramework software tries to communicate via the serial port, and some devices do not appreciate that. If you only have a few of these devices, you can add their serial port to the `ReservedSerialPorts` array as these are excluded from the discovery of real hardware nanoDevices.
 
 A path to a directory or file can be specified relative to the directory the `nano.devices.json` file resides in. It can also be an absolute path, and the path may contain environment variables like `%USERPROFILE%`. Instead of a `\` a '/' may be used. So `../.nanoFramework/Firmware`, `c:\ProgramData\nanoFramework\Firmware` and `%USERPROFILE%/.nanoFramework/Firmware` are all valid paths.
@@ -149,12 +153,14 @@ All settings are optional, except for the values used in *DeviceTypes* that shou
 
 Four settings determine whether the project is designed to be deployed to a device:
 
-- If neither *DeviceTypes*, *Platforms* is specified, the configuration does not provide any information about the devices the project is designed to be deployed to.
+- If neither *DeviceTypes*, *Platforms* or *DeviceSelection* is specified, the configuration does not provide any information about the devices the project is designed to be deployed to.
 - If any of *DeviceTypes* or *Platforms* is specified, resulting in at least one selected platform or one firmware/target (*DeviceTypes* combined with *DeviceTypeTargets*), the project is designed to be deployed to devices that satisfy any of the criteria:
     - The firmware/target of the device matches the names specified by *DeviceTypes* combined with *DeviceTypeTargets*.
     - The platform of the device matches the names specified in *Platforms*.
+    - The system serial number or module serial number matches any of the numbers specified for one of the *DeviceSelection* (if specified).
 - If any of *DeviceTypes* is specified without resulting targets (combined with *DeviceTypeTargets*) or *Platforms* is specified as an empty array, the project is designed to be deployed to devices that satisfy the criterion:
-    - The system serial number or module serial number matches any of the numbers specified for one of the *Devices*.
+    - The system serial number or module serial number matches any of the numbers specified for one of the *DeviceSelection* (if specified)
+    - The system serial number or module serial number matches any of the numbers specified for one of the *Devices* if no *DeviceSelection* has been specified.
 - If *FirmwareArchivePath* is specified, an additional criterion is that the firmware for the device must be present in the firmware archive.
 
 ### Settings used by nanoFramework tools
@@ -171,6 +177,7 @@ An overview of the settings that are used by the various .NET **nanoFramework** 
 | DeviceTypes | Consistency verification task<sup>2</sup> |
 | Platforms | Consistency verification task |
 | Devices | Consistency verification task<sup>6</sup>, Visual Studio extension<sup>3</sup>, custom (community) tools<sup>5</sup> |
+| DeviceSelection | Consistency verification task<sup>6</sup>, Visual Studio extension<sup>3</sup>, test framework<sup>4,7</sup> |
 | ReservedSerialPorts | Visual Studio extension<sup>3</sup>, test framework<sup>4</sup> |
 
 <sup>1</sup> This setting is required.
