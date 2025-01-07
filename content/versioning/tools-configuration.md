@@ -99,7 +99,7 @@ Use the Task Scheduler in Windows (or a similar program) to run this script ever
 ## Configuration and devices
 
 ### Content of a configuration file
-The information on devices that are relevant for a single project, for a solution, a (git) repository for one or more products or for all of your devices is stored in  `nano.devices.json` files. A file that has all possible settings looks like:
+The information on devices that are relevant for a single project, for a solution, a (git) repository for one or more products or for all of your devices is stored in  `nano.devices.json` files (comments allowed). A file that has all possible settings looks like:
 
 ```json
 {
@@ -147,9 +147,9 @@ with:
 - `DeviceSelection` is a list of devices (as mentioned in *Devices*) the project is designed to be deployed to. 
 - `ReservedSerialPorts` are used to limit the serial ports used in the discovery of real hardware nanoDevices. In the discovery process .NET nanoFramework software tries to communicate via the serial port, and some devices do not appreciate that. If you only have a few of these devices, you can add their serial port to the `ReservedSerialPorts` array as these are excluded from the discovery of real hardware nanoDevices.
 
-A path to a directory or file can be specified relative to the directory the `nano.devices.json` file resides in. It can also be an absolute path, and the path may contain environment variables like `%USERPROFILE%`. Instead of a `\` a '/' may be used. So `../.nanoFramework/Firmware`, `c:\ProgramData\nanoFramework\Firmware` and `%USERPROFILE%/.nanoFramework/Firmware` are all valid paths.
+A path to a file can be specified relative to the directory the `nano.devices.json` file resides in. It can also be an absolute path, and the path may contain environment variables like `%USERPROFILE%`. Instead of a `\` a '/' may be used. So `../.nanoFramework/nano.devices.json`, `c:\ProgramData\nanoFramework\nano.devices.json` and `%USERPROFILE%/.nanoFramework/nano.devices.json` are all valid paths.
 
-All settings are optional, except for the values used in *DeviceTypes* that should be defined in *DeviceTypeTargets* in the same file or in an imported file. Comments are allowed in the configuration file.
+All settings are optional, except for the values used in *DeviceTypes* that should be defined in *DeviceTypeTargets* in the same file or in an imported file.
 
 Four settings determine whether the project is designed to be deployed to a device:
 
