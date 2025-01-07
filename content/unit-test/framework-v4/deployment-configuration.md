@@ -168,7 +168,7 @@ It is best to specify the value in the deployment configuration with the same ty
 
 By default the test platform will not execute tests if not all required deployment configuration is available. E.g., if a setup method of a test class requires one value (eg., with key "SSID name") from the deployment configuration and a test method requires another (e.g, "url"), no test of the test class is executed if the deployment configuration does not provide a value for "SSID name", and the test method is executed only if values for "SSID name" and "url" are present.
 
-You can tell the test platform that it is acceptable to execute a method if a value is not present by using `true` as the second argument of the `DeploymentConfiguration` attribute:
+You can tell the test platform that it is acceptable to execute a method if a value is not present by using `false` as the second argument of the `DeploymentConfiguration` attribute:
 
 ```csharp
 [TestClass]
@@ -176,12 +176,12 @@ public class MyTestClass
 {
     [Setup]
     public void TestHardware(
-        [DeploymentConfiguration ("SSID name", true)] string ssidName)
+        [DeploymentConfiguration ("SSID name", false)] string ssidName)
     {
     }
 
     [TestMethod]
-    public void TestWebsiteAccess ([DeploymentConfiguration ("url", true)] string ioPort)
+    public void TestWebsiteAccess ([DeploymentConfiguration ("url", false)] string ioPort)
     {
     }
 }
@@ -259,4 +259,5 @@ public class MyTestClass
     }
 }
 ```
+
 It is recommended to use a attributes (rather than code in a setup or test method) for as much of the deployment configuration check as possible, as attributes are evaluated before any tests are executed on a device. If the outcome is that none of the selected tests have to be run on the device, the test platform can skip deploying the test assembly to the device. The evaluation of a setup method is always done on the device, so after deployment to the device.
