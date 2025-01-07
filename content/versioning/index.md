@@ -9,3 +9,5 @@ Fortunately, the .NET **nanoFramework** offers several strategies and tools to h
 If you choose to always work with the latest versions and do the consistency checks when the application is deployed to a device, you don't have to any extra work. This is supported out of the box. Otherwise you need to add extra files to your projects:
 
 - [Tools and configuration](tools-configuration.md) to support controlled updates and/or early consistency checks.
+
+- The [nano.devices.json](nano-devices-json.md) configuration is not only used by the tools that support a versioning strategy, but also by other .NET **nanoFramework** tools.
