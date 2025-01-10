@@ -79,7 +79,7 @@ namespace nanoFramework.TestFramework.Test
 }
 ```
 
-Implement test platform extensions in a .NET **nanoFramework** class library that references the NuGet package `nanoFramework.TestFramework.Core`.
+Implement test platform extensions in a .NET **nanoFramework** class library that references the NuGet package `nanoFramework.TestFramework.Library`.
 
 ## Evaluation of the attributes
 
@@ -148,7 +148,7 @@ Non-trivial implementations of `IDataRow` should also be tested in a regular .NE
 
 It is common to run hardware-specific tests on a development board. Some boards have extra features, e.g., on-board LED or a small screen, that can be used to display some information about the tests being executed on that device. A visual cue that a device is taking parts in the tests can be useful, as the test platform cannot use the Visual Studio Test Explorer to communicate that information.
 
-To implement such a monitor, create a class library with a public class that implements the `IUnitTestMonitor` interface. Mark the class with the appropriate `[TestOn...]` [attributes](writing-unit-tests#where-to-run-a-test-method-device-selection) to inform the test platform on what devices the monitor can be used. The monitor can have a setup method to receive deployment configuration data.
+To implement such a monitor, create a class library with a public class that implements the `IUnitTestMonitor` interface. Mark the class with the appropriate `[TestOn...]` [attributes](where-tests-are-executed.md) to inform the test platform on what devices the monitor can be used. The monitor can have a setup method to receive deployment configuration data.
 
 ```csharp
 namespace nanoFramework.TestFramework.MyExtensions

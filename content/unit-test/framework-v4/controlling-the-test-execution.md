@@ -1,6 +1,6 @@
 ﻿# Controlling the test execution
 
-The author of a unit test has indicated via [attributes](writing-unit-tests#where-to-run-a-test-method-device-selection) on what devices the test should be run. There are two configuration files that control how the tests should be run:
+The author of a unit test has [indicated](where-tests-are-executed.md) on what devices the test should be run. There are two configuration files that control how the tests should be run:
 
 - Tests are run on the nanoDevices that satisfy the criteria expressed in the [`nano.devices.json` configuration](../versioning/nano-devices-json.md) for the test project. If that file does not exist or if no device selection is configured, the test platform makes a selection from all available (connected) nanoDevices. Tests are run on [as many devices as required](run-tests-in-visual-studio#running-the-unit-tests); it may not be necessary to run tests on all available devices.
 
@@ -12,23 +12,25 @@ The test configuration is specified in the optional `nano.tests.json` file in th
 
 ```json
 {
-    "RealHardwareTimeout": 120000,
-    "MaxVirtualDevices": 4,
-    "VirtualDeviceTimeout": 60000,
     "Logging": "None",
+    "TestCasesFromConnectedDevices": false,
     "DeploymentConfiguration": [
         "../deployment.json"
-    ]
+    ],
+    "MaxVirtualDevices": 4,
+    "VirtualDeviceTimeout": 60000,
+    "RealHardwareTimeout": 120000
 }
 ```
 
 with:
 
-- `RealHardwareTimeout` is the maximum time in milliseconds the execution of the tests in a single test assembly on real hardware is allowed to take. This is excluding the time it takes to initialize the device and deploy the tests to the device.
-- `MaxVirtualDevices` is the maximum number of virtual devices to run in parallel. Specify 0 to use as many as the computer has logical processors.
-- `VirtualDeviceTimeout` is the maximum time in milliseconds the execution of the tests in a single test assembly on the virtual device is allowed to take.
-- `Logging` specifies the logging of the test platform during the test discovery and execution orchestration. The logging can be viewed in the output window of Visual Studio for test discovery, and in the test results for the execution orchestration. Valid values are `None`, `Detailed`, `Verbose`, `Warning` and `Error`. If omitted `Warning` is used.
-- `DeploymentConfiguration`: see [deployment configuration](deployment-configuration).
+- `Logging` (optional) specifies the logging of the test platform during the test discovery and execution orchestration. The logging can be viewed in the output window of Visual Studio for test discovery, and (if generated as part of the execution of tests) in the test results. Valid values are `None`, `Detailed`, `Verbose`, `Warning` and `Error`. If omitted `Warning` is used.
+- `TestCasesFromConnectedDevices` (optional) indicates how test cases should be generated; see the [description](where-tests-are-executed.md). Default is `false`.
+- `DeploymentConfiguration` (optional) specifies the deployment configuration files in the same way as the `Import` element of the [deployment configuration](deployment-configuration.md).
+- `MaxVirtualDevices` (optional) is the maximum number of virtual devices to run in parallel. Specify 0 (the default) to use as many as the computer has logical processors.
+- `VirtualDeviceTimeout` (optional) is the maximum time in milliseconds the execution of the tests in a single test assembly on the virtual device is allowed to take.
+- `RealHardwareTimeout` (optional) is the maximum time in milliseconds the execution of the tests in a single test assembly on a real hardware nanoDevice is allowed to take. This is excluding the time it takes to initialize the device and deploy the tests to the device.
 
 ## Configuration of the VSTest test host
 

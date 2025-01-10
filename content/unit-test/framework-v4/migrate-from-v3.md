@@ -30,7 +30,7 @@ It is now also possible to use [debug unit tests projects](debugging-unit-tests)
 
 It is recommended that the next step is to start using the [.runsettings hierarchy](controlling-the-test-execution#configuration-file-hierarchy) and move all `nano.runsettings`/`nano.runsettings.user`/`nano.vstest.runsettings` from the project directory to the solution directory or a global directory in the repository.
 
-The project-specific `nano.runsettings` file limit the execution of the unit tests to a virtual device or to real hardware. Add `[TestOn...]` [assembly attributes](writing-unit-tests#assembly-and-test-class-attributes) to the code of the test project to achieve the same.
+The project-specific `nano.runsettings` file limit the execution of the unit tests to a virtual device or to real hardware. Add `[TestOn...]` [assembly attributes](where-tests-are-executed.md) to the code of the test project to achieve the same.
 
 ## Start using the new v4 features
 

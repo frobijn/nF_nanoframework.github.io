@@ -1,5 +1,12 @@
 ﻿# Writing unit tests
 
+
+*** TODO ***
+
+
+
+
+
 The basic premise of writing unit tests is that the author of the test knows exactly what the test is for, how it should be run and on what devices it makes sense to execute the test. That is communicated to the test platform tooling via attributes. This section describes the standard attributes and their effect.
 
 ## Test classes and methods
@@ -179,6 +186,65 @@ namespace nanoFramework.TestFramework.Test
 }
 ```
 
+## Where to run a test method: device selection
+
+The test platform supports running unit tests on real hardware devices and on a virtual device. The virtual device runs on the Windows platform and provides support for the non-hardware-related features in the .NET **nanoFramework** platform. In the future the support of other features (e.g., networking) may be included.
+
+The support of the test platform for testing on real hardware and on a virtual device is different. The test platform can run the tests from multiple test assemblies in parallel using multiple virtual devices, whereas multiple test assemblies have to be run one by one on a hardware device. Every virtual device has the same capabilities so it doesn't matter on which virtual device is executed, but there is a wide variety of hardware devices and a test may have to be run on several different models. A virtual device can always be started, but real hardware is not always available.
+
+The test platform requires the author of a test to separately indicate whether a test should be run on a virtual device, and whether a test should be run on real hardware. The author can also indicate what type of real hardware device. Example:
+
+```csharp
+namespace nanoFramework.TestFramework.Test
+{
+    [TestClass]
+    public class TestOfTest
+    {
+
+        [TestOnVirtualDevice]
+        public void TestOfDataProcessing()
+        {
+            // This method is only executed on the virtual device
+        }
+
+        [TestOnRealHardware]
+        [TestOnVirtualDevice]
+        public void TestGpioExtensions()
+        {
+            // This method is executed on real hardware and on the virtual device
+        }
+
+        [TestOnPlatform ("esp32")]
+        public void TestEsp32SpecificCLRImplementations()
+        {
+            // This method is only executed on an ESP32 device
+        }
+    }
+}
+```
+
+Of course the tests that should be run on real hardware are only executed if that hardware is available. The test platform selects the devices to run (a selection of) tests on:
+
+- All selected tests that should be run on a virtual device, are executed on a virtual device. Each test assembly is run on a separate virtual device. If needed multiple virtual devices are run in parallel.
+
+- Tests on real hardware are run one test assembly at a time, one assembly after the other. The test platform tries to run tests on as many real hardware devices as available, in parallel (and in parallel with any virtual devices).
+
+- For each available real hardware device, the test platform checks whether a test should be run on that device. If two devices meet the criteria for the same test, the test is run on at least one of the devices. The test is also run on the other device if the author of the test has indicated that the two devices are sufficiently different that it makes sense to execute the test on both devices.
+
+The attributes that determine what device is selected:
+
+- The `[TestOnVirtualDevice]` attribute indicates that the test should be executed on the virtual device.
+
+- The `[TestOnRealHardware]` attribute indicates that the test should be executed on real hardware. It is sufficient to run the test on one of the available real hardware devices.
+
+- The `[TestOnPlatform]` attribute indicates that the test should be executed on real hardware of a particular platform. If two available devices have different firmware (a different target), the test should be run on both devices.
+
+- The `[TestOnTarget]` attribute indicates that the test should be executed on real hardware that has the specified firmware (target) installed. The test should be run on only one of the available devices.
+
+- If you want to have different selection criteria for a real hardware device, create a new attribute that implements the `ITestOnRealHardware` interface.
+
+If the author of a test does not specify on what devices a test should be executed, the test platform acts as if the `[TestOnVirtualDevice]` and `[TestOnRealHardware]` attributes have been specified.
+
 ## Assembly and test class attributes
 
 The selection of devices to run a test on may be identical for all tests in a class. The corresponding attributes may also be set for the test class:
@@ -187,7 +253,7 @@ The selection of devices to run a test on may be identical for all tests in a cl
 namespace nanoFramework.TestFramework.Test
 {
     [TestClass]
-    [TestOnEachTarget]
+    [TestOnVirtualDevice]
     public class TestOfTest
     {
         public void TestOfDataProcessing()

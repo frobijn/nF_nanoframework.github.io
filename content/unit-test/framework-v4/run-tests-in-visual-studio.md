@@ -47,7 +47,7 @@ The Test Explorer shows three extra traits for the test method in the example.
 
 In the Test Explorer you select the tests you want to run. Visual Studio then instructs the various test frameworks to run the tests. .NET **nanoFramework** test platform fully supports this. If you select a single test, only that test is executed. If you select all tests, all are executed.
 
-The test platform uses the [TestOn... attributes](writing-unit-tests#where-to-run-a-test-method-device-selection) to decide on which device a test should be executed.
+The test platform uses the [TestOn... attributes](where-tests-are-executed.md) to decide on which device a test should be executed.
 
 For tests that should be run on the virtual device, the test platform starts a single virtual device per unit test projects to run the tests from that project. If multiple virtual devices are required, they are run in parallel. The virtual devices are stopped after the selected tests have been run.
 

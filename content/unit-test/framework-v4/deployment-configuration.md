@@ -1,6 +1,6 @@
 ﻿# Deployment configuration
 
-Especially in more generic hardware-specific tests extra information is required about the "make and model" of the device. It is not enough to know the platform or installed firmware. The [TestOn... attributes](writing-unit-tests#where-to-run-a-test-method-device-selection) may need to know whether the additional hardware (e.g., a sensor) is connected to a device in order to decide whether a test can be run on that device. When the test is executed, it needs to now which I/O ports the hardware is connected to.
+Especially in more generic hardware-specific tests extra information is required about the "make and model" of the device. It is not enough to know the platform or installed firmware. The [TestOn... attributes](where-tests-are-executed.md) may need to know whether the additional hardware (e.g., a sensor) is connected to a device in order to decide whether a test can be run on that device. When the test is executed, it needs to now which I/O ports the hardware is connected to.
 
 The test platform has a mechanism to provide this type of *deployment configuration* to the test attributes and to test or setup methods that should run on real hardware. Other test frameworks have similar features (cf *TestRunParameters* in the VSTest test host). The test platform has no knowledge of what the content of the deployment configuration is - that is up to you. It only provides a mechanism to get that information to your code.
 
@@ -130,7 +130,7 @@ The `DeployTo` object has a single property, one of `Platform`, `Target`, `SSN` 
 
 ## Using deployment configuration information
 
-The deployment configuration can be passed to [setup and test methods](writing-unit-tests) of of test classes and classes that implement `ITestAssembly` using the `[DeploymentConfiguration]` attribute applied to the parameter that should receive the configuration value:
+The deployment configuration can be passed to [setup and test methods](writing-unit-tests.md) of of test classes and classes that implement `ITestAssembly` using the `[DeploymentConfiguration]` attribute applied to the parameter that should receive the configuration value:
 
 ```csharp
 [TestClass]

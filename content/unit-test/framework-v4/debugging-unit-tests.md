@@ -70,5 +70,5 @@ Open the `SelectUnitTests.json` file in Visual Studio. The editor offers intelli
 
 - The file can also contain information about the [deployment configuration](deployment-configuration).
 
-When the project is built, the test platform tooling will generate the code to run the unit tests. The `[TestOn...]` [attributes](writing-unit-tests#where-to-run-a-test-method-device-selection) are ignored. You have to make sure that the correct device is selected when deploying the project for debugging.
+When the project is built, the test platform tooling will generate the code to run the unit tests. The `[TestOn...]` [attributes](where-tests-are-executed.md) are ignored. You have to make sure that the correct device is selected when deploying the project for debugging.
 

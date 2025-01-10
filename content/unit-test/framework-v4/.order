@@ -1,6 +1,7 @@
-create-a-unit-test-project
+﻿create-a-unit-test-project
 writing-unit-tests
 assert
+where-tests-are-run
 run-tests-in-visual-studio
 debugging-unit-tests
 controlling-the-test-execution
