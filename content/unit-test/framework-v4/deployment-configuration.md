@@ -162,7 +162,7 @@ public class MyTestClass
 ```
 The `[DeploymentConfiguration]` attribute accepts the key in the deployment configuration. The parameter should have a type of `string` to receive textual values, `int` or `long` for integer values or `byte[]` for binary data. If data is not available, the argument passed is `null` or -1 for integer values; this is reported in the result of the unit test.
 
-It is best to specify the value in the deployment configuration with the same type as used in the code: a text value or file for `string` data, a number for `int` or `long` and a file for `byte[]`. The test platform will try to convert values from one type to another if necessary. A value that is used in the code as an `int` can be specified in the deployment configuration as a string, eg., `"42"`.
+It is best to specify the value in the deployment configuration with the same type as used in the code: a text value or file for `string` data, a number for `int` or `long` and a file for `byte[]`. The test platform will try to convert values from one type to another if necessary. A value that is used in the code as an `int` can be specified in the deployment configuration as a string, eg., `"42"`. A value that is used in the code as `byte[]` can best be specified in the deployment configuration as a file, but it is possible to specify a number (a 64-bit integer converted to bytes, little-endian) or string (text encoded as UTF8). 
 
 ## Executing tests depending on deployment configuration information
 

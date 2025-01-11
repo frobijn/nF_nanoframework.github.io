@@ -13,7 +13,6 @@ The test configuration is specified in the optional `nano.tests.json` file in th
 ```json
 {
     "Logging": "None",
-    "TestCasesFromConnectedDevices": false,
     "DeploymentConfiguration": [
         "../deployment.json"
     ],
@@ -26,7 +25,6 @@ The test configuration is specified in the optional `nano.tests.json` file in th
 with:
 
 - `Logging` (optional) specifies the logging of the test platform during the test discovery and execution orchestration. The logging can be viewed in the output window of Visual Studio for test discovery, and (if generated as part of the execution of tests) in the test results. Valid values are `None`, `Detailed`, `Verbose`, `Warning` and `Error`. If omitted `Warning` is used.
-- `TestCasesFromConnectedDevices` (optional) indicates how test cases should be generated; see the [description](where-tests-are-executed.md). Default is `false`.
 - `DeploymentConfiguration` (optional) specifies the deployment configuration files in the same way as the `Import` element of the [deployment configuration](deployment-configuration.md).
 - `MaxVirtualDevices` (optional) is the maximum number of virtual devices to run in parallel. Specify 0 (the default) to use as many as the computer has logical processors.
 - `VirtualDeviceTimeout` (optional) is the maximum time in milliseconds the execution of the tests in a single test assembly on the virtual device is allowed to take.
