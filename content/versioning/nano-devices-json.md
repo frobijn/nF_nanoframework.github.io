@@ -15,7 +15,7 @@ The information on devices that are relevant for a single project, for a solutio
     "DeviceTypeTargets": {
         "Primary device": [ "ESP32_S3_ALL" ],
         "Alternative": [ "ESP32_S3_BLE" ],
-        "Test devices": ["ESP32_S3", "ESP32_S3_ALL", "ESP32_S3_BLE"]
+        "Test devices": ["Virtual nanoDevice", "ESP32_S3_ALL", "ESP32_S3_BLE"]
     },
     "DeviceTypes": [
         "Primary device",
@@ -44,8 +44,8 @@ with:
 - `NanoFFPath` is the path to the `nanoff.exe` file that is used to deploy firmware, applications and files to a device. If it is not present, the global tool is used.
 - `NanoCLRPath` is the path to the `nanoclr.exe` file that is used to run the Virtual nanoDevice. If it is not present, the global tool is used.
 - `FirmwareArchivePath` is the path to the firmware archive; this is the same path as used in the `--archivepath` argument to *nanoff*.
-- `DeviceTypeTargets` is a list of named device types, and per name a list with the name of the firmware/target to use. The name can be anything except *Virtual nanoDevice*.
-- `DeviceTypes` is a list of device types the project is designed to be deployed to. The name *Virtual nanoDevice* refers the the Virtual nanoDevice, all other names must have been defined in *DeviceTypeTargets*.
+- `DeviceTypeTargets` is a list of named device types, and per name a list with the name of the firmware/target to use. The firmware for a Virtual nanoDevice is named "Virtual nanoDevice". There are two predefined lists: *Hardware nanoDevice* for all devices excpet the Virtual Device, and *Virtual nanoDevice* for the Virtual Device only.
+- `DeviceTypes` is a list of device types the project is designed to be deployed to. The names in the list must be *Hardware nanoDevice*, *Virtual nanoDevice* or a name defined in *DeviceTypeTargets*.
 - `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all devices that match the specified platform. If *FirmwareArchivePath* is specified, the list is limited to all devices for which firmware is present in the archive.
 - `Devices` is a list of specific devices that are available to deploy the project to. A device is identified by its system serial number or module serial number. The value is either the firmware that is (or should be used) for the device, or a combination of the firmware name and a device name that can be used in user interfaces and in logging.
 - `DeviceSelection` is a list of devices (as mentioned in *Devices*) the project is designed to be deployed to. 
@@ -62,7 +62,7 @@ Four settings determine whether the project is designed to be deployed to a devi
     - The firmware/target of the device matches the names specified by *DeviceTypes* combined with *DeviceTypeTargets*.
     - The platform of the device matches the names specified in *Platforms*.
     - The system serial number or module serial number matches any of the numbers specified for one of the *DeviceSelection* (if specified), regardless of the target specified for the device.
-- If *FirmwareArchivePath* is specified, an additional criterion is that the firmware for the device must be present in the firmware archive.
+- If *FirmwareArchivePath* is specified, an additional criterion is that the firmware for a hardware device must be present in the firmware archive. 
 
 ## Hierarchy of configuration files
 
