@@ -116,7 +116,7 @@ but if the test project can be executed on the Virtual Device, its `nano.devices
 
 If your project is using a firmware archive, make sure (the correct version of) the runtime of the Virtual nanoDevice is present in the firmware archive.
 
-The presence of a `nano.devices.json` configuration also has effect on the presentation of the tests in the Visual Studio Test Explorer. Example: a test method has attribute `TestOnEachTarget` and in `nano.devices.json` a selection of devices is specified:
+The presence of a `nano.devices.json` configuration also has effect on the presentation of the tests in the Visual Studio Test Explorer. The test platform can create more accurate test cases. Example: a test method has attribute `TestOnEachTarget` and in `nano.devices.json` of the test project a selection of devices is specified:
 
 ```json
 {
@@ -125,7 +125,7 @@ The presence of a `nano.devices.json` configuration also has effect on the prese
 }
 ```
 
-The test platform will create a test case for each target in the firmware archive for the ESP32-platform. In the Visual Studio Test Explorer that looks like:
+The test platform will create a test case for each target in the firmware archive for the ESP32-platform that can be used to deploy the test project's assembly to. In the Visual Studio Test Explorer that looks like:
 
 TODO: image of Visual Studio Test Explorer.
 
