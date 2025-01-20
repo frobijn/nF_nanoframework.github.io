@@ -7,6 +7,7 @@ The information on devices that are relevant for a single project, for a solutio
 
 ```json
 {
+    "$schema": "https://.../schemas/nano.devices.json",
     "Import": [ "<path to configuration to import>" ],
     "NuGetPackageList": "<(relative) path to NuGetPackageList.txt file>",
     "NanoFFPath": "<localtools>/nanoff.exe",
@@ -40,20 +41,22 @@ The information on devices that are relevant for a single project, for a solutio
 with:
 
 - `Import` is an array with one or more paths to other `nano.devices.json` files. Those files are read first, then the content of this file is used to overwrite the imported settings. The name of the file can be anything and does not have to be `nano.devices.json`.
-- `NuGetPackageList` is the path to a [file](#nuget-package-list) that lists the allowed versions of the NuGet packages.
+- `NuGetPackageList` is the path to a [file](tools-configuration.md#nuget-package-list) that lists the allowed versions of the NuGet packages.
 - `NanoFFPath` is the path to the `nanoff.exe` file that is used to deploy firmware, applications and files to a device. If it is not present, the global tool is used.
 - `NanoCLRPath` is the path to the `nanoclr.exe` file that is used to run the Virtual nanoDevice. If it is not present, the global tool is used.
 - `FirmwareArchivePath` is the path to the firmware archive; this is the same path as used in the `--archivepath` argument to *nanoff*.
-- `DeviceTypeTargets` is a list of named device types, and per name a list with the name of the firmware/target to use. The firmware for a Virtual nanoDevice is named "Virtual nanoDevice". There are two predefined lists: *Hardware nanoDevice* for all devices excpet the Virtual Device, and *Virtual nanoDevice* for the Virtual Device only.
-- `DeviceTypes` is a list of device types the project is designed to be deployed to. The names in the list must be *Hardware nanoDevice*, *Virtual nanoDevice* or a name defined in *DeviceTypeTargets*.
-- `Platforms` is a list of platforms the project is designed to be deployed to. This is shorthand to select all devices that match the specified platform. If *FirmwareArchivePath* is specified, the list is limited to all devices for which firmware is present in the archive.
-- `Devices` is a list of specific devices that are available to deploy the project to. A device is identified by its system serial number or module serial number. The value is either the firmware that is (or should be used) for the device, or a combination of the firmware name and a device name that can be used in user interfaces and in logging.
-- `DeviceSelection` is a list of devices (as mentioned in *Devices*) the project is designed to be deployed to. 
-- `ReservedSerialPorts` are used to limit the serial ports used in the discovery of real hardware nanoDevices. In the discovery process .NET nanoFramework software tries to communicate via the serial port, and some devices do not appreciate that. If you only have a few of these devices, you can add their serial port to the `ReservedSerialPorts` array as these are excluded from the discovery of real hardware nanoDevices.
+- `DeviceTypeTargets` is a list of named device types, and per name a list with the name (case insensitive) of the firmware/target to use. The firmware for a Virtual nanoDevice is named "Virtual nanoDevice". The name cannot be *Hardware nanoDevice* or *Virtual nanoDevice*.
+- `DeviceTypes` is a list of device types the project is designed to be deployed to. The names in the list must be *Hardware nanoDevice* for all devices except the Virtual nanoDevice, *Virtual nanoDevice* for the Virtual nanoDevice, or a name defined in *DeviceTypeTargets*.
+- `Platforms` is a list of platforms (case insensitive) the project is designed to be deployed to. This is shorthand to select all devices that match the specified platform. If *FirmwareArchivePath* is specified, the list is limited to all devices for which firmware is present in the archive.
+- `Devices` is a list of specific devices that are available to deploy the project to. A device is identified by its system serial number or module serial number. The value is either the name of the firmware (case insensitive) that is (or should be used) for the device, or a combination of the firmware name and a device name that is used to identify the device in user interfaces and in logging.
+- `DeviceSelection` is a list of devices, identified by its system serial number or module serial number, the software is designed to be deployed to. The devices must be present in *Devices* in this file or in one of the imported files.
+- `ReservedSerialPorts` are used to limit the serial ports used in the discovery of real hardware nanoDevices. In the discovery process .NET nanoFramework software tries to communicate via the serial port, and some non-nanoDevices devices do not appreciate that. If you only have a few of these devices, you can add their serial port to the `ReservedSerialPorts` array as these are excluded from the discovery of real hardware nanoDevices.
 
 A path to a file can be specified relative to the directory the `nano.devices.json` file resides in. It can also be an absolute path, and the path may contain environment variables like `%USERPROFILE%`. Instead of a `\` a '/' may be used. So `../.nanoFramework/nano.devices.json`, `c:\ProgramData\nanoFramework\nano.devices.json` and `%USERPROFILE%/.nanoFramework/nano.devices.json` are all valid paths.
 
 All settings are optional, except for the values used in *DeviceTypes* that should be defined in *DeviceTypeTargets* in the same file or in an imported file.
+
+The `$schema` is also optional. Some editors (like Visual Studio) will offer intellisense and validation if a schema reference is added to a json file.
 
 Four settings determine whether the project is designed to be deployed to a device:
 
