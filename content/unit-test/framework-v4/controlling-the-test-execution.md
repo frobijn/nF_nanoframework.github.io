@@ -12,6 +12,7 @@ The test configuration is specified in the optional `nano.tests.json` file in th
 
 ```json
 {
+    "$schema": "https://raw.githubusercontent.com/nanoframework/nanoFramework.TestFramework/refs/heads/main/schemas/nano.tests.json",
     "Logging": "None",
     "MaxTestHosts": "4",
     "DeploymentConfiguration": [
@@ -26,9 +27,9 @@ The test configuration is specified in the optional `nano.tests.json` file in th
 with:
 
 - `Logging` (optional) specifies the logging of the test platform during the test discovery and execution orchestration. The logging can be viewed in the output window of Visual Studio for test discovery, and (if generated as part of the execution of tests) in the test results. Valid values are `None`, `Detailed`, `Verbose`, `Warning` and `Error`. If omitted `Warning` is used.
-- `MaxTestHosts` (optional) is the maximum number of test hosts to run in parallel. When the test platform is hosted in Visual Studio or VSTest, it will spin up one or more test hosts to discover unit tests and orchestrate the execution of tests on the available platforms. If supported by Visual Studio/VSTest, multiple test hosts run in parallel. Specify 0 (the default) to use as many as the computer has logical processors.
+- `MaxTestHosts` (optional) is the maximum number of test hosts to run in parallel. When the test platform is hosted in Visual Studio or VSTest, it will spin up one or more test hosts to discover unit tests and orchestrate the execution of tests on the available platforms. If supported by Visual Studio/VSTest, multiple test hosts run in parallel. The default is to use as many as the computer has logical processors.
 - `DeploymentConfiguration` (optional) specifies the deployment configuration files in the same way as the `Import` element of the [deployment configuration](deployment-configuration.md).
-- `MaxVirtualDevices` (optional) is the maximum number of virtual devices to run in parallel. Specify 0 to use as many as the computer has logical processors. Defaults to *MaxTestHosts* if that is specified, or 0 otherwise.
+- `MaxVirtualDevices` (optional) is the maximum number of virtual devices to run in parallel. Defaults to *MaxTestHosts*.
 - `VirtualDeviceTimeout` (optional) is the maximum time in milliseconds the execution of the tests in a single test assembly on the virtual device is allowed to take.
 - `RealHardwareTimeout` (optional) is the maximum time in milliseconds the execution of the tests in a single test assembly on a real hardware nanoDevice is allowed to take. This is excluding the time it takes to initialize the device and deploy the tests to the device.
 
@@ -57,5 +58,5 @@ It still is possible to use a custom configuration file to instruct Visual Studi
 - In the `RunConfiguration` section:
     - The `MaxCpuCount`, `TargetFrameworkVersion`, `TargetPlatform` and `TestAdaptersPaths` settings will be added or overwritten.
     - The `DotnetHostPath` and `TestCaseFilter` elements will be removed.
-- The `TestRunParameters` section is removed.
+- The `TestRunParameters` and `nanoFrameworkAdapter` sections are removed.
 

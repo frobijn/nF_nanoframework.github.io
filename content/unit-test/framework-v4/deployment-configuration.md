@@ -34,6 +34,7 @@ Each deployment configuration file is a json file (comments allowed) with a file
 
 ```json
 {
+    "$schema": "https://raw.githubusercontent.com/nanoframework/nanoFramework.TestFramework/refs/heads/main/schemas/deployment.configuration.json",
     "Import": [
         "devices.deployment.json"
     ],
@@ -62,7 +63,7 @@ Each deployment configuration file is a json file (comments allowed) with a file
         },
 
         "My primary test device": {
-            "SSN": "100000000068B6B33CDA80",
+            "SerialNumber": "100000000068B6B33CDA80",
             "Use": [
                 "ESP32-S3-DevKitC",
                 "SSID"
@@ -82,12 +83,11 @@ with:
     - A selector of a nanoDevice (optional), one of: 
         - `Platform`: platform the nanoDevice, e.g., ESP32, STM32, ti_simplelink, gg11 (case insensitive).
         - `Target`: the name of the firmware/target of the nanoDevice. Use `Virtual nanoDevice` to indicate the deployment data is for a virtual device.
-        - `SSN`: the system serial number of the nanoDevice.
-        - `MSN`: the module serial number of the nanoDevice.
+        - `SerialNumber`: the system serial number or the module serial number of the nanoDevice.
 
         The system and module serial number can be obtained by requesting the *Device capabilities* for a connected nanoDevice in the device explorer in Visual Studio. The .NET **nanoFramework** firmware provides a default system serial number for several platforms.
 
-    - `Use` is an array of component names to include the settings of. The settings are included in the order the components are listed. If multiple components contain a value for the same *key*, the last value encountered is used.
+    - `Use` is an array of component names to include the settings of. It is an error if multiple components specify a different value for the same *key* and that *key* is not present in the *Configuration* of this component.
 
     - `Configuration` is a json object. Each property is a setting, with the property name as *key*. The value of the property can be one of:
         - A string.
