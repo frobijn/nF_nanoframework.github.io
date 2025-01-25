@@ -82,7 +82,7 @@ with:
 - `Components` is an json object that specify the components. The object's property names are the names of the components. Each component is a json object with properties:
     - A selector of a nanoDevice (optional), one of: 
         - `Platform`: platform the nanoDevice, e.g., ESP32, STM32, ti_simplelink, gg11 (case insensitive).
-        - `Target`: the name of the firmware/target of the nanoDevice. Use `Virtual nanoDevice` to indicate the deployment data is for a virtual device.
+        - `Target`: the name of the firmware/target of the nanoDevice. Use `Virtual nanoDevice` to indicate the deployment data is for the Virtual nanoDevice, and `Hardware nanoDevice` to indicate the deployment data is for any hardware nanoDevice.
         - `SerialNumber`: the system serial number or the module serial number of the nanoDevice.
 
         The system and module serial number can be obtained by requesting the *Device capabilities* for a connected nanoDevice in the device explorer in Visual Studio. The .NET **nanoFramework** firmware provides a default system serial number for several platforms.
@@ -95,6 +95,8 @@ with:
         - An object with a single property `File` and as value the path to the file that contains the *value*.
 
 A path to a file can be specified relative to the directory the configuration file resides in. It can also be an absolute path, and the path may contain environment variables like `%USERPROFILE%`. Instead of a `\` a '/' may be used. So `../.nanoFramework/deployment.json`, `c:\ProgramData\nanoFramework\deployment.json` and `%USERPROFILE%/.nanoFramework/deployment.jsondeployment.json` are all valid paths.
+
+If the test project both has deployment configuration for devices identified by serial number and a [`nano.devices.json` configuration](../versioning/nano-devices-json.md) that has the same devices listed in the *Devices* section, the test platform uses the deployment configuration to make the list of test cases more specific by omitting test cases for which insufficient deployment configuration is provided.
 
 ## Specifying deployment configuration for unit tests
 
