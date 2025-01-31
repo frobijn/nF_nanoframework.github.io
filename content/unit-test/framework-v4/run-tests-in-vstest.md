@@ -54,11 +54,11 @@ A CI/CD pipeline most likely runs in an environment where no real hardware nanoD
 
 VSTest supports the election of tests that should (not) be run via a test case filter (`vstest.console.exe /TestCaseFilter` or `VSTest@2 testFiltercriteria`). The [syntax](https://github.com/microsoft/vstest/blob/main/docs/filter.md) for the filter is the same for all test frameworks, except for the supported properties. The .NET **nanoFramework** test adapter supports the properties:
 
-- `FullyQualifiedName` is the fully qualified name of a test method: *namespace.testclassname.testmethodname*.
+- `FullyQualifiedName` is the fully qualified name of a test case: *namespace.testclassname.testmethodname*.
 - `ClassName` is the fully qualified name of a test class: *namespace.testclassname*.
-- `Name` is the name of a test method
+- `MethodName` is the name of a test method
 - `DisplayName` is the name of the test case as shown in the Visual Studio Test Explorer that has the general form: *name(data_row_arguments) [nanoDevice name]*.
-- `TestCategory` is a category assigned to the test method via the `[TestCategory]` attributes (or any attribute implementing the `ITestCategory` interface), including the categories that start with `@` (e.g., `@Virtual nanoDevice`) that are automatically added by the test platform.
+- `TestCategory` or `Trait` is a category assigned to the test method via the `[TestCategory]` attributes (or any attribute implementing the `ITestCategory` interface), including the categories that start with `@` (e.g., `@Virtual nanoDevice`) that are automatically added by the test platform.
 
 In a CI/CD pipeline without hardware nanoDevices you would specify the filter `TestCategory=@Virtual nanoDevice` or `TestCategory!=@Hardware nanoDevice` to select only the tests that should be executed on a Virtual nanoDevice. E.g.:
 
