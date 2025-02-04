@@ -37,7 +37,7 @@ The *MaxTestHosts* and *MaxVirtualDevices* are not relevant for a single test pr
  
 ## Configuration of the VSTest test host
 
-For technical reasons the configuration of the tests for the .NET **nanoFramework** test platform is different from the usual configuration (a .runsettings file) employed by Visual Studio. That is: if you dig deep enough you'll find that the test platform still uses a .runsettings file to instruct Visual Studio and VSTest how to run tests. The test platform creates a `nano.vs.runsettings` file in the same directory the test assembly ends up, with only the settings required by the test platform:
+For technical reasons the configuration of the tests for the .NET **nanoFramework** test platform is different from the usual configuration (a .runsettings file) employed by Visual Studio. That is: if you dig deep enough you'll find that the test platform still uses a .runsettings file to instruct Visual Studio and VSTest how to run tests. The test platform creates a `nano.vs.runsettings` and a `nano.vstest.runsettings` file in the same directory the test assembly ends up. The `nano.vs.runsettings` file is used to run tests via Visual Studio:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -48,10 +48,15 @@ For technical reasons the configuration of the tests for the .NET **nanoFramewor
         <TargetPlatform>x64</TargetPlatform>
         <TestAdaptersPaths><!-- location of the nanoFramework test platform adapter --></TestAdaptersPaths>
     </RunConfiguration>
+    <nanoFramework>
+        <Scheduling>Interactive</Scheduling>
+    </nanoFramework>
 </RunSettings>
 ```
 
 The main purpose of this file is to make sure Visual Studio can find the test adapter for discovering and running unit tests, without any action required by the developer. Do not change this file; it will be re-generated on the next build.
+
+The `nano.vstest.runsettings` is identical except for the *Scheduling* setting and is intended to be used to [run tests with VSTest](run-tests-in-vstest.md#configuration-of-the-test-adapter).
 
 It still is possible to use a custom configuration file to instruct Visual Studio and VSTest how to run tests for configuration that is not related to the .NET **nanoFramework** test platform. Create a file `nano.runsettings` in the project directory and add all configuration options. At build time the content of the file will be copied to the `nano.vs.runsettings` file (which is located in a different directory than `nano.runsettings`), and:
 

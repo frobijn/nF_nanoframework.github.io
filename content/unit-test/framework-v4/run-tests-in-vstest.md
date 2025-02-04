@@ -21,19 +21,12 @@ The reason this is necessary has to do with the other things you have to do: mos
 
 ## Configuration of the test adapter
 
-VSTest has to know where the .NET **nanoFramework** test adapter is located and how to run it. The easiest way is to pass a *.runsettings* configuration file. For each test project such a file is created in the output directory, e.g.:
+VSTest has to know where the .NET **nanoFramework** test adapter is located and how to run it. The easiest way is to pass a *.runsettings* [configuration file](controlling-the-test-execution.md#configuration-of-the-vstest-test-host). For each test project such a file is created in the output directory, e.g.:
 
 ```
-vstest.console.exe /Settings:TestProject\bin\Release\nano.vs.runsettings TestProject\bin\Release\TestProject.dll
+vstest.console.exe /Settings:TestProject\bin\Release\nano.vstest.runsettings TestProject\bin\Release\TestProject.dll
 ```
-
-A copy of the `nano.vs.runsettings` file can be created in any location. This can be advantageous in CI/CD pipelines as the pipeline specification does not depend on the exact names of the test projects. Add to one of the test projects in the `*.nfproj` file, e.g.:
-```
-  <ItemGroup>
-    <NF_TP_Runsettings Include="$(MSBuildThisFileDirectory)..\Configuration\vstest.runsettings" />
-  </ItemGroup>
-```
-and use that file in the task, e.g.:
+or use that file in the task, e.g.:
 
 ```
   - task: VSTest@2
@@ -44,9 +37,11 @@ and use that file in the task, e.g.:
       testAssemblyVer2: |
         **\*.NFTests*.dll
         !**\obj\**
-      runSettingsFile: 'Configuration\vstest.runsettings'
+      runSettingsFile: 'TestProject\bin\Release\nano.vstest.runsettings'
       ...
 ``` 
+
+Do not use the `nano.vs.runsettings` to run the tests via VSTest in a CI/CD pipeline if tests have to be run on hardware nanoDevices. The difference between the two files is the `Scheduling` setting that determines how tests are scheduled. It is set to `Interactive` in `nano.vs.runsettings` and to `Sequential` in `nano.vstest.runsettings`. The latter is first-come-first-served scheduling: if multiple tests need to be run on the same hardware nanoDevice, the test that is scheduled first is run first. Tests scheduled for an *Interactive* setting take precedence over *Sequential* test, and the order in which tests are run depends on the number of devices a test can be run on. The *Interactive* scheduling tries to optimize the total test time, e.g., by prioritizing test projects that can only run on a particular nanoDevice, even if they are scheduled at a later time. If *Interactive* scheduling is used in a CI/CD pipeline where new tests are scheduled all the time, it may occur that some tests are never run as newly scheduled tests keep being prioritized.
 
 ## Select the tests for the available nanoDevices
 
