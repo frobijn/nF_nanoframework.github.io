@@ -132,7 +132,7 @@ The `DeployTo` object has a single property, one of `Platform`, `Target`, `SSN` 
 
 ## Using deployment configuration information
 
-The deployment configuration can be passed to [setup and test methods](writing-unit-tests.md) of of test classes and classes that implement `ITestAssembly` using the `[DeploymentConfiguration]` attribute applied to the parameter that should receive the configuration value:
+The deployment configuration can be passed to [setup and test methods](writing-unit-tests.md) of of test classes and classes that implement `ITestAssembly` using the `[DeploymentConfigurationValue]` attribute applied to the parameter that should receive the configuration value:
 
 ```csharp
 [TestClass]
@@ -140,13 +140,13 @@ public class MyTestClass
 {
     [Setup]
     public void TestHardware(
-        [DeploymentConfiguration ("DevBoard configuration")] byte[] configuration,
-        [DeploymentConfiguration ("SSID name")] string ssidName)
+        [DeploymentConfigurationValue("DevBoard configuration")] byte[] configuration,
+        [DeploymentConfigurationValue("SSID name")] string ssidName)
     {
     }
 
     [TestMethod]
-    public void TestRGBLED ([DeploymentConfiguration ("RGB LED I/O port")] int ioPort)
+    public void TestRGBLED ([DeploymentConfigurationValue("RGB LED I/O port")] int ioPort)
     {
     }
 
@@ -154,42 +154,68 @@ public class MyTestClass
     [DataRow(4, 1)]
     [DataRow(5, 9)]
     public void TestRGBLED (
-        DeploymentConfiguration ("Test image")] byte[] image,
+        DeploymentConfigurationValue("Test image")] byte[] image,
         int datarow_1,
         int datarow_2,
-        DeploymentConfiguration ("Device ID")] long deviceId)
+        DeploymentConfigurationValue("Device ID")] long deviceId)
     {
     }
 }
 ```
-The `[DeploymentConfiguration]` attribute accepts the key in the deployment configuration. The parameter should have a type of `string` to receive textual values, `int` or `long` for integer values or `byte[]` for binary data. If data is not available, the argument passed is `null` or -1 for integer values; this is reported in the result of the unit test.
+The `[DeploymentConfigurationValue]` attribute accepts the key in the deployment configuration. The parameter should have a type of `string` to receive textual values, `int` or `long` for integer values or `byte[]` for binary data. If data is not available, the argument passed is `null` or -1 for integer values; this is reported in the result of the unit test.
 
 It is best to specify the value in the deployment configuration with the same type as used in the code: a text value or file for `string` data, a number for `int` or `long` and a file for `byte[]`. The test platform will try to convert values from one type to another if necessary. A value that is used in the code as an `int` can be specified in the deployment configuration as a string, eg., `"42"`. A value that is used in the code as `byte[]` can best be specified in the deployment configuration as a file, but it is possible to specify a number (a 64-bit integer converted to bytes, little-endian) or string (text encoded as UTF8). 
+
+The deployment configuration can also be used to deploy files to the flash storage of a device, provided the device's firmware supports that:
+
+```csharp
+[TestClass]
+[DeviceStorageFile("DevBoard configuration", "devboard.config")]
+public class MyTestClass
+{
+    [Setup]
+    [DeviceStorageFile("Certificate", "I:/security/certificate.cer")]
+    public void Setup()
+    {
+    }
+
+    [TestMethod]
+    [DeviceStorageFile("data", "I:\\data.txt")]
+    public void TestMethod()
+    {
+    }
+}
+```
+
+The `[DeviceStorageFile]` attribute accepts the key in the deployment configuration, and the path the file should be deployed to. The path can be relative to the root of the storage, or it can be an absolute path. As a directory separator both `\` and `/` can be used. The content of the file is the value of the deployment configuration for the key as `byte[]`.
 
 ## Executing tests depending on deployment configuration information
 
 By default the test platform will not execute tests if not all required deployment configuration is available. E.g., if a setup method of a test class requires one value (eg., with key "SSID name") from the deployment configuration and a test method requires another (e.g, "url"), no test of the test class is executed if the deployment configuration does not provide a value for "SSID name", and the test method is executed only if values for "SSID name" and "url" are present.
 
-You can tell the test platform that it is acceptable to execute a method if a value is not present by using `false` as the second argument of the `DeploymentConfiguration` attribute:
+You can tell the test platform that it is acceptable to execute a method if a value is not present by using `false` as the last argument of the `DeploymentConfigurationValue` and `DeviceStorageFile` attributes:
 
 ```csharp
 [TestClass]
 public class MyTestClass
 {
     [Setup]
+    [DeviceStorageFile("Certificate", "I:/security/certificate.cer", false)]
     public void TestHardware(
-        [DeploymentConfiguration ("SSID name", false)] string ssidName)
+        [DeploymentConfigurationValue("SSID name", false)] string ssidName)
     {
     }
 
     [TestMethod]
-    public void TestWebsiteAccess ([DeploymentConfiguration ("url", false)] string ioPort)
+    public void TestWebsiteAccess ([DeploymentConfigurationValue("url", false)] string ioPort)
     {
     }
 }
 ```
 
-If no value is available for a particular *key*, the default value `null` (or -1 for integer values) is passed to the method.
+If no value is available for a particular *key*, the default value `null` (or -1 for integer values) is passed to the method, and the file is not copied to the device.
+
+## Extending the framework
 
 The test platform does not provide any attributes out of the box if it is more complicated to determine when a setup or test method can be run given a particular deployment configuration. But you can easily provide one yourself. Define an attribute that implements the `ITestOnConfiguredDevice` interface and apply it to any setup or test method:
 
@@ -197,52 +223,47 @@ The test platform does not provide any attributes out of the box if it is more c
 [TestClass]
 public class MyTestClass
 {
-    [TestOnDevBoard]
+    [AssertDevBoard]
     [Setup]
     public void Setup()
     {
     }
 
     [TestMethod]
-    public void TestHardware([DeploymentConfiguration ("DevBoard configuration")] byte[] configuration)
+    public void TestHardware([DeploymentConfigurationValue("DevBoard configuration")] byte[] configuration)
     {
     }
 }
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-public class TestOnDevBoardAttribute : Attribute, ITestOnConfiguredDevice
+public class AssertDevBoardAttribute : Attribute, IAssertDeploymentConfiguration
 {
-    public string Description
-        => "DevBoard"
-
-    public bool ShouldTestOnDevice(ITestDevice testDevice)
+    public bool CanTestOnDevice(IDeploymentConfiguration configuration)
     {
-        byte[] configData = testDevice.GetDeploymentConfigurationFile ("DevBoard configuration");
+        byte[] configData = configuration.GetValue("DevBoard configuration", typeof (byte[]));
         if (configData is null)
         {
+            configuration.ReportError("no DevBoard configuration available.")
             return false;
         }
-        MyConfiguration configuration = MyConfiguration.Parse (configData);
+        MyConfiguration configuration = MyConfiguration.Parse(configData);
         // Other criteria based on the content of the configuration
     }
-
-    public bool AreDevicesEqual(ITestDevice testDevice1, ITestDevice testDevice2)
-        => true;
 }
 ```
-As the code of the attribute is executed [on the testhost](extending-the-framework#evaluation-of-the-attributes) and not on a **nanoFramework** device, the `ShouldTestOnDevice` and `AreDevicesEqual` cannot use the specialized .NET **nanoFramework** libraries. If you need those, perform the check in the setup method:
+As the code of the attribute is executed [on the testhost](extending-the-framework#evaluation-of-the-attributes) and not on a **nanoFramework** device, the `CanTestOnDevice` cannot use the specialized .NET **nanoFramework** libraries. If you need those, perform the check in the setup method:
 
 ```csharp
 [TestClass]
 public class MyTestClass
 {
-    [TestOnDevBoard]
     [Setup]
-    public void Setup()
+    public void Setup([DeploymentConfigurationValue("DevBoard configuration")] byte[] configuration)
     {
-        byte[] configData = testDevice.GetDeploymentConfigurationFile ("DevBoard configuration");
+        byte[] configData = testDevice.GetDeploymentConfigurationFile("DevBoard configuration");
         if (configData is null)
         {
+            Assert.SkipTest("No DevBoard configuration available.");
             return false;
         }
         MyConfiguration configuration = MyConfiguration.Parse (configData);
@@ -251,12 +272,12 @@ public class MyTestClass
 
         if (/* cannot run for this configuration */)
         {
-            Assert.SetupFailed("The test cannot be executed on this device.");
+            Assert.SkipTest("The test cannot be executed on this device.");
         }
     }
 
     [TestMethod]
-    public void TestHardware([DeploymentConfiguration ("DevBoard configuration")] byte[] configuration)
+    public void TestHardware()
     {
     }
 }
